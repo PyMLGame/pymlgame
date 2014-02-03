@@ -12,5 +12,6 @@ __status__ = "Development"
 from pymlgame.events import EventListener
 from pymlgame.screen import Screen
 from pymlgame.clock import Clock
+from pymlgame.surface import Surface
 
 events = EventListener()

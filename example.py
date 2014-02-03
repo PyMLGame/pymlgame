@@ -26,7 +26,7 @@ class Game(object):
         """
         Create a screen and define some game specific things
         """
-        self.screen = pymlgame.Screen(ip='127.0.0.1', port=1337)
+        self.screen = pymlgame.Screen(host='127.0.0.1', port=1337)
         self.clock = pymlgame.Clock()
         self.running = True
         self.colors = [GREEN, WHITE, RED, YELLOW, BLUE, CYAN]
@@ -35,14 +35,32 @@ class Game(object):
         """
         Update the screens contents in every loop
         """
-        self.screen.fill(BLACK)
-        self.screen.draw_dot((0, 0), self.colors[0])
-        self.screen.draw_dot((self.screen.width - 1, 0), self.colors[0])
-        self.screen.draw_dot((self.screen.width - 1, self.screen.height - 1), self.colors[0])
-        self.screen.draw_dot((0, self.screen.height - 1), self.colors[0])
-        self.screen.draw_line((1, 1), (38, 14), self.colors[1])
-        self.screen.draw_rect((2, 2), (36, 12), self.colors[2], self.colors[3])
-        self.screen.draw_circle((20, 5), 8, self.colors[4], self.colors[5])
+        # this is not really neccesary because the screen is black after initializing
+        bg = pymlgame.Surface((self.screen.width, self.screen.height))
+        bg.fill(BLACK)
+
+        corners = pymlgame.Surface((self.screen.width, self.screen.height))
+        corners.draw_dot((0, 0), self.colors[0])
+        corners.draw_dot((self.screen.width - 1, 0), self.colors[0])
+        corners.draw_dot((self.screen.width - 1, self.screen.height - 1), self.colors[0])
+        corners.draw_dot((0, self.screen.height - 1), self.colors[0])
+
+        lines = pymlgame.Surface((38, 14))
+        lines.draw_line((0, 0), (37, 13), self.colors[1])
+        lines.draw_line((13, 0), (37, 0), self.colors[1])
+
+        rectangles = pymlgame.Surface((22, 10))
+        rectangles.draw_rect((0, 0), (10, 10), self.colors[2], self.colors[3])
+        rectangles.draw_rect((12, 0), (10, 10), self.colors[3], self.colors[2])
+
+        circles = pymlgame.Surface((10, 10))
+        circles.draw_circle((4, 4), 4, self.colors[4], self.colors[5])
+
+        self.screen.blit(bg)
+        self.screen.blit(corners)
+        self.screen.blit(lines, (1, 1))
+        #self.screen.blit(rectangles, (3, 3))
+        #self.screen.blit(circles, (27, 3))
 
     def render(self):
         """
