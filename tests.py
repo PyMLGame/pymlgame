@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pymlgame unittests
+pymlgame - Unittests
 """
 
 __author__ = "Ricardo Band"

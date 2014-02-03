@@ -22,11 +22,11 @@ class Game(object):
     """
     The main game class that holds the gameloop
     """
-    def __init__(self):
+    def __init__(self, host, port):
         """
         Create a screen and define some game specific things
         """
-        self.screen = pymlgame.Screen(host='127.0.0.1', port=1337)
+        self.screen = pymlgame.Screen(host, port)
         self.clock = pymlgame.Clock()
         self.running = True
         self.colors = [GREEN, WHITE, RED, YELLOW, BLUE, CYAN]
@@ -94,5 +94,5 @@ class Game(object):
 
 
 if __name__ == '__main__':
-    GAME = Game()
+    GAME = Game(host='127.0.0.1', port=1337)
     GAME.gameloop()

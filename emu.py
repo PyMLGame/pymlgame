@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Mate Light emulator
+pymlgame - Mate Light emulator
 """
 
 __author__ = "Ricardo Band"
