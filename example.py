@@ -49,7 +49,7 @@ class Game(object):
         Send the current screen content to Mate Light
         """
         self.screen.update()
-        self.clock.tick(10)
+        self.clock.tick(5)
 
     def handle_events(self):
         """
@@ -63,6 +63,7 @@ class Game(object):
             #    elif event['key'] == K_Arrow_Down or event['key'] == K_Arrow_Left:
             #        self.colors.insert(0, self.colors.pop())
             pass
+        self.colors.append(self.colors.pop(0))
 
     def gameloop(self):
         """

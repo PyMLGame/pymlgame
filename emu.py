@@ -36,9 +36,8 @@ class Emu(object):
         self.sock.bind((ip, port))
 
     def recv_data(self):
-        data, addr = self.sock.recvfrom(self.width * self.height * 3)
-        print(addr)
-        print(list(data))
+        data, addr = self.sock.recvfrom(self.width * self.height * 3 + 4)
+        self.matrix = map(ord, data.strip())[:-4]
 
     def update(self):
         for x in range(self.width):
