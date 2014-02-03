@@ -51,18 +51,21 @@ class Emu(object):
         pygame.display.flip()
 
     def gameloop(self):
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        pygame.event.post(pygame.event.Event(pygame.QUIT))
+        try:
+            while True:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        sys.exit()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-            self.recv_data()
-            self.update()
-            self.render()
-            self.clock.tick(15)
+                self.recv_data()
+                self.update()
+                self.render()
+                self.clock.tick(15)
+        except KeyboardInterrupt:
+            pass
 
 
 if __name__ == '__main__':
