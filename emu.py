@@ -25,7 +25,8 @@ class Emu(object):
         self.width = width
         self.height = height
         pygame.init()
-        self.screen = pygame.display.set_mode([self.width * 10, self.height * 10])
+        self.screen = pygame.display.set_mode([self.width * 10,
+                                               self.height * 10])
         pygame.display.set_caption("Mate Light Emu")
         self.clock = pygame.time.Clock()
         self.matrix = []
@@ -40,11 +41,16 @@ class Emu(object):
         self.matrix = map(ord, data.strip())[:-4]
 
     def update(self):
+        pixels = len(self.matrix)
         for x in range(self.width):
             for y in range(self.height):
                 pixel = y * self.width * 3 + x * 3
-                pygame.draw.circle(self.screen, (self.matrix[pixel], self.matrix[pixel + 1], self.matrix[pixel + 2]),
-                                   (x * 10 + 5, y * 10 + 5), 5, 0)
+                # sometimes the matrix is not as big as it should
+                if pixel < pixels:
+                    pygame.draw.circle(self.screen, (self.matrix[pixel],
+                                                     self.matrix[pixel + 1],
+                                                     self.matrix[pixel + 2]),
+                                       (x * 10 + 5, y * 10 + 5), 5, 0)
 
     def render(self):
         pygame.display.update()
@@ -63,7 +69,6 @@ class Emu(object):
                 self.recv_data()
                 self.update()
                 self.render()
-                self.clock.tick(15)
         except KeyboardInterrupt:
             pass
 
