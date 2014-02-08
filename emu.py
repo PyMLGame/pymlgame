@@ -21,7 +21,7 @@ import pygame
 
 
 class Emu(object):
-    def __init__(self, width=40, height=16, ip='127.0.0.1', port=1337):
+    def __init__(self, width=40, height=40, ip='127.0.0.1', port=1337):
         self.width = width
         self.height = height
         pygame.init()
