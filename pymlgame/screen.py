@@ -16,7 +16,6 @@ __status__ = "Development"
 import socket
 
 import pymlgame
-from pymlgame.locals import *
 
 
 class Screen(object):
@@ -32,9 +31,15 @@ class Screen(object):
         self.width = width
         self.height = height
 
-        # fill screen with black pixels
-        surface = pymlgame.Surface((self.width, self.height))
-        surface.fill(BLACK)
+        self.matrix = None
+        self.reset()
+
+    def reset(self):
+        """
+        Fill the screen with black pixels
+        """
+        surface = pymlgame.Surface(self.width, self.height)
+        surface.fill(pymlgame.BLACK)
         self.matrix = surface.matrix
 
     def update(self):
