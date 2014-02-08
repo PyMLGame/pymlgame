@@ -14,6 +14,7 @@ __maintainer__ = "Ricardo Band"
 __email__ = "me@xengi.de"
 __status__ = "Development"
 
+import time
 import math
 import random
 import unittest
@@ -174,6 +175,7 @@ class SurfaceTest(unittest.TestCase):
                                pymlgame.MAGENTA, pymlgame.DARKCYAN, 1.0)
 
     def test_draw_circle(self):
+        #TODO: invent a way to draw this, then a way to test this
         pos = (int(TEST_WIDTH / 2) - 1, int(TEST_HEIGHT / 2) - 1)
         radius = int(min(TEST_WIDTH, TEST_HEIGHT) / 2) - 2
         self.surface.draw_circle(pos, radius, pymlgame.GREEN, None, 1.0)
@@ -186,6 +188,18 @@ class SurfaceTest(unittest.TestCase):
         self.assertEqual(pymlgame.Surface.get_color(pymlgame.WHITE, 0.5),
                          tuple([math.floor(val * 0.5)
                                 for val in pymlgame.WHITE]))
+
+
+class ClockTest(unittest.TestCase):
+    def setUp(self):
+        self.clock = pymlgame.Clock()
+
+    def test_tick(self):
+        before = time.time()
+        self.clock.tick(24)
+        after = time.time()
+        self.assertGreater(after, before)
+        self.assertAlmostEqual(before, after - 1/24, 2)
 
 
 if __name__ == '__main__':
