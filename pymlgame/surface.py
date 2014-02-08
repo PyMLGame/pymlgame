@@ -68,46 +68,44 @@ class Surface(object):
         """
         Draw a rectangle with the given color on the screen and optionally fill it with fillcolor.
         """
-        color = self.get_color(color, brightness)
         # draw top and botton line
         for x in range(size[0]):
-            self.draw_dot((pos[0] + x, pos[1]), color)
-            self.draw_dot((pos[0] + x, pos[1] + size[1] - 1), color)
+            self.draw_dot((pos[0] + x, pos[1]), color, brightness)
+            self.draw_dot((pos[0] + x, pos[1] + size[1] - 1), color, brightness)
         # draw left and right side
         for y in range(size[1]):
-            self.draw_dot((pos[0], pos[1] + y), color)
-            self.draw_dot((pos[0] + size[0] - 1, pos[1] + y), color)
+            self.draw_dot((pos[0], pos[1] + y), color, brightness)
+            self.draw_dot((pos[0] + size[0] - 1, pos[1] + y), color, brightness)
         # draw filled rect
         #TODO: find out if the rect is at least 3x3 to actually have a filling
         if fillcolor:
-            fillcolor = self.get_color(fillcolor, brightness)
             for x in range(size[0] - 2):
                 for y in range(size[1] - 2):
-                    self.draw_dot((pos[0] + 1 + x, pos[1] + 1 + y), fillcolor)
+                    self.draw_dot((pos[0] + 1 + x, pos[1] + 1 + y),
+                                  fillcolor, brightness)
 
     def draw_circle(self, pos, radius, color, fillcolor=None, brightness=0.1):
         """
         Draw a circle with the given color on the screen and optionally fill it with fillcolor.
         """
-        def dist(point, pos):
-            return abs(math.sqrt((pos[0] - point[0])**2 + (pos[1] - point[1])**2) - radius)
+        #TODO: This still produces rubbish but it's on a good way to success
+        def dist(d, p, r):
+            return abs(math.sqrt((p[0] - d[0])**2 + (p[1] - d[1])**2) - r)
 
-        color = self.get_color(color, brightness)
         points = []
         for x in range(pos[0] - radius, pos[0] + radius):
             for y in range(pos[1] - radius, pos[1] + radius):
                 if 0 < x < self.width and 0 < y < self.height:
-                    if dist((x, y), pos) < 1:
+                    if dist((x, y), pos, radius) < 1.3:
                         points.append((x, y))
 
         # draw fill color
         if fillcolor:
-            fillcolor = self.get_color(fillcolor, brightness)
             for point in points:
                 pass
         # draw outline
         for point in points:
-            self.draw_dot(point, color)
+            self.draw_dot(point, color, brightness)
 
     @staticmethod
     def get_color(color, brightness=0.1):
