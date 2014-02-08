@@ -86,7 +86,8 @@ class Surface(object):
 
     def draw_circle(self, pos, radius, color, fillcolor=None, brightness=0.1):
         """
-        Draw a circle with the given color on the screen and optionally fill it with fillcolor.
+        Draw a circle with the given color on the screen and optionally fill it
+        with fillcolor.
         """
         #TODO: This still produces rubbish but it's on a good way to success
         def dist(d, p, r):
@@ -106,6 +107,26 @@ class Surface(object):
         # draw outline
         for point in points:
             self.draw_dot(point, color, brightness)
+
+    def blit(self, surface, pos=(0, 0)):
+        """
+        Blits a surface on this surface at pos
+        """
+        for x in range(surface.width):
+            for y in range(surface.height):
+                px = x + pos[0]
+                py = y + pos[1]
+                if 0 < px < self.width and 0 < py < self.height:
+                    self.matrix[px][py] = surface.matrix[x][y]
+
+    def replace_color(self, before, after):
+        """
+        Replaces a color on a surface with another one.
+        """
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.matrix[x][y] == before:
+                    self.matrix[x][y] = after
 
     @staticmethod
     def get_color(color, brightness=0.1):

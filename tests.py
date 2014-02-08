@@ -68,14 +68,16 @@ class ScreenTest(unittest.TestCase):
         pass
 
     def test_blit(self):
-        surface = pymlgame.Surface(int(TEST_WIDTH / 2), int(TEST_HEIGHT / 2))
-        surface.fill(pymlgame.WHITE)
-        self.screen.blit(surface, (0, 0))
+        surface = pymlgame.Surface(TEST_WIDTH - 2, TEST_HEIGHT - 2)
+        surface.fill(pymlgame.WHITE, 1.0)
+        self.screen.blit(surface, (1, 1))
 
-        self.assertEqual(self.screen.matrix[int(TEST_WIDTH / 2 - 1)][int(TEST_HEIGHT / 2 - 1)],
-                         surface.get_color(pymlgame.WHITE, 0.1))
-        self.assertEqual(self.screen.matrix[int(TEST_WIDTH / 2)][int(TEST_HEIGHT / 2)],
-                         surface.get_color(pymlgame.BLACK, 0.1))
+        for x in range(TEST_WIDTH):
+            for y in range(TEST_HEIGHT):
+                if 0 < x < TEST_WIDTH - 1 and 0 < y < TEST_HEIGHT - 1:
+                    self.assertEqual(self.screen.matrix[x][y], pymlgame.WHITE)
+                else:
+                    self.assertEqual(self.screen.matrix[x][y], pymlgame.BLACK)
 
     def test_point_on_screen(self):
         self.assertTrue(self.screen.point_on_screen((0, 0)))
@@ -179,6 +181,18 @@ class SurfaceTest(unittest.TestCase):
         pos = (int(TEST_WIDTH / 2) - 1, int(TEST_HEIGHT / 2) - 1)
         radius = int(min(TEST_WIDTH, TEST_HEIGHT) / 2) - 2
         self.surface.draw_circle(pos, radius, pymlgame.GREEN, None, 1.0)
+
+    def test_blit(self):
+        surface = pymlgame.Surface(TEST_WIDTH - 2, TEST_HEIGHT - 2)
+        surface.fill(pymlgame.WHITE, 1.0)
+        self.surface.blit(surface, (1, 1))
+
+        for x in range(TEST_WIDTH):
+            for y in range(TEST_HEIGHT):
+                if 0 < x < TEST_WIDTH - 1 and 0 < y < TEST_HEIGHT - 1:
+                    self.assertEqual(self.surface.matrix[x][y], pymlgame.WHITE)
+                else:
+                    self.assertEqual(self.surface.matrix[x][y], pymlgame.BLACK)
 
     def test_get_color(self):
         self.assertEqual(pymlgame.Surface.get_color(pymlgame.GREEN, 1.0),
