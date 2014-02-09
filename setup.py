@@ -9,7 +9,7 @@ __author__ = "Ricardo Band"
 __copyright__ = "Copyright 2013, Ricardo Band"
 __credits__ = ["Ricardo Band"]
 __license__ = "MIT"
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 __maintainer__ = "Ricardo Band"
 __email__ = "me@xengi.de"
 __status__ = "Development"
@@ -46,4 +46,5 @@ setup(name='pymlgame',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
       platforms='',
       license=__license__,
-      packages=['distutils', 'distutils.command'])
+      packages=['pymlgame'],
+      requires=['jsonrpclib-pelix'])
