@@ -5,14 +5,14 @@
 pymlgame - Unittests
 """
 
-__author__ = "Ricardo Band"
-__copyright__ = "Copyright 2013, Ricardo Band"
-__credits__ = ["Ricardo Band"]
-__license__ = "MIT"
-__version__ = "0.0.1"
-__maintainer__ = "Ricardo Band"
-__email__ = "me@xengi.de"
-__status__ = "Development"
+__author__ = 'Ricardo Band'
+__copyright__ = 'Copyright 2013, Ricardo Band'
+__credits__ = ['Ricardo Band']
+__license__ = 'MIT'
+__version__ = '0.1.0'
+__maintainer__ = 'Ricardo Band'
+__email__ = 'me@xengi.de'
+__status__ = 'Development'
 
 import time
 import math
