@@ -3,13 +3,17 @@
 
 """
 pymlgame - Mate Light emulator
+==============================
+
+This little program emulates the awesome Mate Light, just in case you're not
+at c-base but want to code something for it.
 """
 
 __author__ = "Ricardo Band"
 __copyright__ = "Copyright 2013, Ricardo Band"
 __credits__ = ["Ricardo Band"]
 __license__ = "MIT"
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 __maintainer__ = "Ricardo Band"
 __email__ = "me@xengi.de"
 __status__ = "Development"
@@ -21,7 +25,14 @@ import pygame
 
 
 class Emu(object):
+    """
+    The Emulator is a simple pygame game.
+    """
     def __init__(self, width=40, height=40, ip='127.0.0.1', port=1337):
+        """
+        Creates a screen with the given size, generates the matrix for the
+        Mate bottles and binds the socket for incoming frames.
+        """
         self.width = width
         self.height = height
         pygame.init()
@@ -37,15 +48,21 @@ class Emu(object):
         self.sock.bind((ip, port))
 
     def recv_data(self):
+        """
+        Grab the next frame and put it on the matrix.
+        """
         data, addr = self.sock.recvfrom(self.width * self.height * 3 + 4)
         self.matrix = map(ord, data.strip())[:-4]
 
     def update(self):
+        """
+        Generate the output from the matrix.
+        """
         pixels = len(self.matrix)
         for x in range(self.width):
             for y in range(self.height):
                 pixel = y * self.width * 3 + x * 3
-                # sometimes the matrix is not as big as it should
+                #TODO: sometimes the matrix is not as big as it should
                 if pixel < pixels:
                     pygame.draw.circle(self.screen, (self.matrix[pixel],
                                                      self.matrix[pixel + 1],
@@ -53,10 +70,17 @@ class Emu(object):
                                        (x * 10 + 5, y * 10 + 5), 5, 0)
 
     def render(self):
+        """
+        Output the current screen.
+        """
         pygame.display.update()
         pygame.display.flip()
 
     def gameloop(self):
+        """
+        Loop through all the necessary stuff and end execution when Ctrl+C
+        was hit.
+        """
         try:
             while True:
                 for event in pygame.event.get():
