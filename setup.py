@@ -5,14 +5,14 @@
 pymlgame
 """
 
-__author__ = "Ricardo Band"
-__copyright__ = "Copyright 2013, Ricardo Band"
-__credits__ = ["Ricardo Band"]
-__license__ = "MIT"
-__version__ = "0.1.0"
-__maintainer__ = "Ricardo Band"
-__email__ = "me@xengi.de"
-__status__ = "Development"
+__author__ = 'Ricardo Band'
+__copyright__ = 'Copyright 2013, Ricardo Band'
+__credits__ = ['Ricardo Band']
+__license__ = 'MIT'
+__version__ = '0.1.0'
+__maintainer__ = 'Ricardo Band'
+__email__ = 'me@xengi.de'
+__status__ = 'Development'
 
 import os
 from distutils.core import setup
@@ -35,7 +35,7 @@ setup(name='pymlgame',
       description='pymlgame is an abstraction layer to easily build games for Mate Light inspired by pygame.',
       long_description=read('README.md'),
       download_url='https://github.com/c-base/pymlgame/archive/master.zip',
-      classifiers=['Development Status :: 2 - Pre-Alpha',
+      classifiers=['Development Status :: 3 - Alpha',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: MIT License',
@@ -44,7 +44,7 @@ setup(name='pymlgame',
                    'Programming Language :: Python :: 3.3',
                    'Topic :: Games/Entertainment',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
-      platforms='',
+      platforms='any',
       license=__license__,
       packages=['pymlgame'],
       requires=['jsonrpclib-pelix'])
