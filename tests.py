@@ -19,10 +19,14 @@ import math
 import random
 import unittest
 
+import jsonrpclib
+
 import pymlgame
 
 TEST_HOST = 'localhost'
+TEST_RPC_HOST = 'localhost'
 TEST_PORT = 1337
+TEST_RPC_PORT = 1338
 TEST_WIDTH = 40
 TEST_HEIGHT = 40
 
@@ -214,6 +218,80 @@ class ClockTest(unittest.TestCase):
         after = time.time()
         self.assertGreater(after, before)
         self.assertAlmostEqual(before, after - 1/24, 2)
+
+
+class Controllertests(unittest.TestCase):
+    def setUp(self):
+        self.controller = pymlgame.Controller(TEST_RPC_HOST, TEST_RPC_PORT)
+        self.server = jsonrpclib.Server('http://{}:{}'.format(TEST_RPC_HOST,
+                                                              TEST_RPC_PORT))
+
+    def tearDown(self):
+        self.controller.server.server_close()
+        time.sleep(1)
+
+    def test_uid(self):
+        uid1 = self.server.init()
+        uid2 = self.server.init()
+        uid3 = self.server.init()
+        self.assertGreater(uid3, uid2)
+        self.assertGreater(uid2, uid1)
+
+    def test_button_keys(self):
+        keys = self.server.get_button_keys()
+        self.assertGreater(len(keys), 0)
+        self.assertEqual(len(keys), len(self.controller._mapping.keys()))
+
+    def test_event_keys(self):
+        keys = self.server.get_event_keys()
+        self.assertGreater(len(keys), 0)
+        self.assertEqual(len(keys), len(self.controller._events.keys()))
+
+    def test_ping(self):
+        self.assertEqual(len(self.controller.queue), 0)
+        uid = self.server.init()
+        self.assertEqual(len(self.controller.queue), 1)
+
+        self.server.ping(uid)
+        self.assertEqual(len(self.controller.queue), 2)
+        self.assertEqual(self.controller.queue[1].type, pymlgame.PING)
+        self.assertEqual(self.controller.queue[1].uid, uid)
+
+    def test_trigger_button(self):
+        self.assertEqual(len(self.controller.queue), 0)
+        uid = self.server.init()
+        self.assertEqual(len(self.controller.queue), 1)
+
+        self.server.trigger_button(uid, 'KeyDown', 'Up')
+        self.server.trigger_button(uid, 'KeyUp', 'Up')
+        self.server.trigger_button(uid, 'KeyDown', 'Down')
+        self.server.trigger_button(uid, 'KeyUp', 'Down')
+        self.server.trigger_button(uid, 'KeyDown', 'Left')
+        self.server.trigger_button(uid, 'KeyUp', 'Left')
+        self.server.trigger_button(uid, 'KeyDown', 'Right')
+        self.server.trigger_button(uid, 'KeyUp', 'Right')
+        self.server.trigger_button(uid, 'KeyDown', 'A')
+        self.server.trigger_button(uid, 'KeyUp', 'A')
+        self.server.trigger_button(uid, 'KeyDown', 'B')
+        self.server.trigger_button(uid, 'KeyUp', 'B')
+        self.server.trigger_button(uid, 'KeyDown', 'X')
+        self.server.trigger_button(uid, 'KeyUp', 'X')
+        self.server.trigger_button(uid, 'KeyDown', 'Y')
+        self.server.trigger_button(uid, 'KeyUp', 'Y')
+        self.server.trigger_button(uid, 'KeyDown', 'Start')
+        self.server.trigger_button(uid, 'KeyUp', 'Start')
+        self.server.trigger_button(uid, 'KeyDown', 'Select')
+        self.server.trigger_button(uid, 'KeyUp', 'Select')
+        self.server.trigger_button(uid, 'KeyDown', 'R1')
+        self.server.trigger_button(uid, 'KeyUp', 'R1')
+        self.server.trigger_button(uid, 'KeyDown', 'R2')
+        self.server.trigger_button(uid, 'KeyUp', 'R2')
+        self.server.trigger_button(uid, 'KeyDown', 'L1')
+        self.server.trigger_button(uid, 'KeyUp', 'L1')
+        self.server.trigger_button(uid, 'KeyDown', 'L2')
+        self.server.trigger_button(uid, 'KeyUp', 'L2')
+
+        self.assertEqual(len(self.controller.queue), 29)
 
 
 if __name__ == '__main__':

@@ -10,9 +10,7 @@ __email__ = "me@xengi.de"
 __status__ = "Development"
 
 from pymlgame.locals import *
-from pymlgame.events import EventListener
 from pymlgame.screen import Screen
 from pymlgame.clock import Clock
 from pymlgame.surface import Surface
-
-events = EventListener()
+from pymlgame.controller import Controller

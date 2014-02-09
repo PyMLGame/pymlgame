@@ -1,2 +1,1 @@
-Pillow==2.3.0
 jsonrpclib-pelix==0.1.6.1
