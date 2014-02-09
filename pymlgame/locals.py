@@ -1,16 +1,39 @@
 # -*- coding: utf-8 -*-
 
+"""
+pymlgame - Locals
+"""
+
+__author__ = 'Ricardo Band'
+__copyright__ = 'Copyright 2013, Ricardo Band'
+__credits__ = ['Ricardo Band']
+__license__ = 'MIT'
+__version__ = '0.1.0'
+__maintainer__ = 'Ricardo Band'
+__email__ = 'me@xengi.de'
+__status__ = 'Development'
+
 # event types
 KEYUP = 0
 KEYDOWN = 1
+NEWCTLR = 2
+PING = 3
 
-# keys
-K_Arrow_Up = 0
-K_Arrow_Down = 1
-K_Arrow_Left = 2
-K_Arrow_Right = 3
-K_Return = 4
-K_Escape = 5
+# controller inputs
+CTLR_UP = 0
+CTLR_DOWN = 1
+CTLR_LEFT = 2
+CTLR_RIGHT = 3
+CTLR_A = 4
+CTLR_B = 5
+CTLR_X = 6
+CTLR_Y = 7
+CTLR_START = 8
+CTLR_SELECT = 9
+CTLR_R1 = 10
+CTLR_R2 = 11
+CTLR_L1 = 12
+CTLR_L2 = 13
 
 # predefined colors
 RED = (255, 0, 0)

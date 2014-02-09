@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'xengi'
+"""
+pymlgame - Clock
+"""
+
+__author__ = 'Ricardo Band'
+__copyright__ = 'Copyright 2013, Ricardo Band'
+__credits__ = ['Ricardo Band']
+__license__ = 'MIT'
+__version__ = '0.1.0'
+__maintainer__ = 'Ricardo Band'
+__email__ = 'me@xengi.de'
+__status__ = 'Development'
 
 import time
 
@@ -13,13 +24,10 @@ class Clock(object):
         """
         Get a fresh Clock.
         """
-        self.__last_tick = False
+        pass
 
     def tick(self, fps):
         """
         Let the Clock tick x times per second.
         """
-        tick = time.time()
-        if self.__last_tick:
-            time.sleep(float(1)/fps)
-        self.__last_tick = tick
+        time.sleep(1.0/fps)
