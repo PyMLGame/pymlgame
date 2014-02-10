@@ -11,10 +11,10 @@ controller example for this.
 """
 
 __author__ = 'Ricardo Band'
-__copyright__ = 'Copyright 2013, Ricardo Band'
+__copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
@@ -138,6 +138,9 @@ class Game(object):
                 self.render()
         except KeyboardInterrupt:
             pass
+        # don't forget to quit the controller process if your game ends.
+        # In future releases this will be done automatically.
+        self.ctlr.quit()
 
 
 if __name__ == '__main__':
