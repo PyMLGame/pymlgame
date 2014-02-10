@@ -115,6 +115,12 @@ class Controller(object):
             ret.append(self.queue.pop(0))
         return ret
 
+    def quit(self):
+        """
+        Kill the Controller process.
+        """
+        self.t._stop()
+
 
 class Event(object):
     """

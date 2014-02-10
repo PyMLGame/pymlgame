@@ -141,5 +141,5 @@ class Game(object):
 
 
 if __name__ == '__main__':
-    GAME = Game('127.0.0.1', 1337, 40, 40)
+    GAME = Game('127.0.0.1', 1337, 50, 28)
     GAME.gameloop()

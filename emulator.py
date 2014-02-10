@@ -28,7 +28,7 @@ class Emu(object):
     """
     The Emulator is a simple pygame game.
     """
-    def __init__(self, width=40, height=40, ip='127.0.0.1', port=1337):
+    def __init__(self, width=50, height=28, ip='127.0.0.1', port=1337):
         """
         Creates a screen with the given size, generates the matrix for the
         Mate bottles and binds the socket for incoming frames.
