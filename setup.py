@@ -47,4 +47,4 @@ setup(name='pymlgame',
       platforms='any',
       license=__license__,
       packages=['pymlgame'],
-      requires=['jsonrpclib-pelix'])
+      requires=[,])

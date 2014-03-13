@@ -14,10 +14,13 @@ __email__ = 'me@xengi.de'
 __status__ = 'Development'
 
 # event types
-KEYUP = 0
-KEYDOWN = 1
-NEWCTLR = 2
-PING = 3
+E_KEYUP = 0
+E_KEYDOWN = 1
+E_NEWCTLR = 2
+E_PING = 3
+E_DISCONNECT = 4
+E_MESSAGE = 5
+E_RUMBLE = 6
 
 # controller inputs
 CTLR_UP = 0
@@ -59,6 +62,3 @@ GREY3 = (178, 178, 178)
 GREY2 = (204, 204, 204)
 GREY1 = (229, 229, 229)
 WHITE = (255, 255, 255)
-
-
-
