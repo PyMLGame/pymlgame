@@ -5,9 +5,8 @@
 pymlgame - example game
 =======================
 
-This example shows how a simple pymlgame could be written. You also need a
-connected controller to actually see something happening. You can use the
-controller example for this.
+This example shows how a simple pymlgame could be written. You also need a connected controller to actually see
+something happening. You can use the controller example for this.
 """
 
 __author__ = 'Ricardo Band'
@@ -34,6 +33,8 @@ class Game(object):
         self.port = port
         self.width = width
         self.height = height
+
+        pymlgame.init(self.host, self.port)
         self.screen = pymlgame.Screen(self.host, self.port,
                                       self.width, self.height)
         self.clock = pymlgame.Clock()
@@ -56,8 +57,6 @@ class Game(object):
                                        int(self.screen.height / 2) - 2)
         self.filled = pymlgame.Surface(int(self.screen.width / 2) - 2,
                                        int(self.screen.height / 2) - 2)
-
-        self.ctlr = pymlgame.Controller(self.host, self.port + 1)
 
     def update(self):
         """
@@ -109,22 +108,25 @@ class Game(object):
                                        int(self.screen.height / 2) + 1))
 
         self.screen.update()
-        self.clock.tick(2)
+        self.clock.tick(15)
 
     def handle_events(self):
         """
         Loop through all events.
         """
-        for event in self.ctlr.get_events():
-            if event.type == pymlgame.NEWCTLR:
-                print('new ctlr with uid:', event.uid)
-            elif event.type == pymlgame.KEYDOWN:
+        for event in pymlgame.get_events():
+            print('event received', event.type)
+            if event.type == pymlgame.E_NEWCTLR:
+                print('new ctlr with ip:', event.uid)
+            elif event.type == pymlgame.E_DISCONNECT:
+                print()
+            elif event.type == pymlgame.E_KEYDOWN:
                 print('key', event.button, 'down on', event.uid)
                 self.colors.append(self.colors.pop(0))
-            elif event.type == pymlgame.KEYUP:
+            elif event.type == pymlgame.E_KEYUP:
                 print('key', event.button, 'up on', event.uid)
                 self.colors.append(self.colors.pop(0))
-            elif event.type == pymlgame.PING:
+            elif event.type == pymlgame.E_PING:
                 print('ping from', event.uid)
 
     def gameloop(self):
@@ -138,11 +140,9 @@ class Game(object):
                 self.render()
         except KeyboardInterrupt:
             pass
-        # don't forget to quit the controller process if your game ends.
-        # In future releases this will be done automatically.
-        self.ctlr.quit()
 
 
 if __name__ == '__main__':
-    GAME = Game('127.0.0.1', 1337, 50, 28)
+    GAME = Game('127.0.0.1', 1337, 40, 16)
+    #GAME = Game('matelight.cbrp3.c-base.org', 1337, 40, 16)
     GAME.gameloop()

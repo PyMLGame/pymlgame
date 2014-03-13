@@ -13,120 +13,141 @@ __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
 
+import time
+import socket
+from queue import Queue
 from threading import Thread
-
-from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 
 import pymlgame
 
 
-class Controller(object):
+class Controller(Thread):
     """
-    A controller can be a game controller attached to the system or any other
-    input that can trigger the controller functions
+    A controller can be a game controller attached to the system or any other input that can trigger the controller
+    functions like a smartphone app.
     """
-    def __init__(self, host, port):
+    def __init__(self, host='127.0.0.1', port=1338):
         """
         Creates a controller deamon
         """
+        super(Controller, self).__init__()
         self.host = host
         self.port = port
-        self._mapping = {'Up': pymlgame.CTLR_UP,
-                         'Down': pymlgame.CTLR_DOWN,
-                         'Left': pymlgame.CTLR_LEFT,
-                         'Right': pymlgame.CTLR_RIGHT,
-                         'A': pymlgame.CTLR_A,
-                         'B': pymlgame.CTLR_B,
-                         'X': pymlgame.CTLR_X,
-                         'Y': pymlgame.CTLR_Y,
-                         'Start': pymlgame.CTLR_START,
-                         'Select': pymlgame.CTLR_SELECT,
-                         'R1': pymlgame.CTLR_R1,
-                         'R2': pymlgame.CTLR_R2,
-                         'L1': pymlgame.CTLR_L1,
-                         'L2': pymlgame.CTLR_L2}
-        self._events = {'KeyUp': pymlgame.KEYUP,
-                        'KeyDown': pymlgame.KEYDOWN}
-        self.queue = []
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind((host, port))
+        self.queue = Queue()
+        self.controllers = {}
         self._next_uid = 0
 
-        self.server = SimpleJSONRPCServer((host, port))
-        self.server.register_function(self.init)
-        self.server.register_function(self.get_button_keys)
-        self.server.register_function(self.get_event_keys)
-        self.server.register_function(self.ping)
-        self.server.register_function(self.trigger_button)
-
-        self.t = Thread(target=self.server.serve_forever)
-        self.t.start()
-
-    def init(self):
+    def new_controller(self, addr):
         """
         Get an uid for your controller.
         """
         uid = self._next_uid
         self._next_uid += 1
-        event = Event()
-        event.type = pymlgame.NEWCTLR
+        self.controllers[uid] = [addr, '00000000000000', time.time()]
+
+        # create event for pygame
+        event = object()
+        event.type = pymlgame.E_NEWCTLR
         event.uid = uid
-        self.queue.append(event)
+        self.queue.put_nowait(event)
+
+        # return the uid for the socket
         return uid
 
-    def get_button_keys(self):
+    def del_controller(self, uid):
         """
-        Return a list of possible buttons.
+        Remove controller from internal list and tell the game.
         """
-        return list(self._mapping.keys())
-
-    def get_event_keys(self):
-        """
-        Return a list of possible events.
-        """
-        return list(self._events.keys())
-
-    def ping(self, uid):
-        """
-        Just say hello so that pymlgame knows that your controller is still
-        in use. Otherwise the game could delete unused controlers after a
-        while. But this has to be implemented by the game.
-        """
-        event = Event()
-        event.type = pymlgame.PING
+        #TODO: check if UID actually exists
+        self.controllers.pop(uid)
+        event = object()
+        event.type = pymlgame.E_DISCONNECT
         event.uid = uid
-        self.queue.append(event)
+        self.queue.put_nowait(event)
 
-    def trigger_button(self, uid, event, button):
+    def ping(self, uid, addr):
         """
-        Triggers the given button event.
+        Just say hello so that pymlgame knows that your controller is still alive. Otherwise the game could delete
+        unused controllers after a while. But this has to be implemented by the game.
         """
-        if self._events[event] >= 0 and self._mapping[button] >= 0:
-            ev = Event()
-            ev.uid = uid
-            ev.type = self._events[event]
-            ev.button = self._mapping[button]
-            self.queue.append(ev)
+        self.controllers[uid][0] = addr
+        self.controllers[uid][2] = time.time()
 
-    def get_events(self):
-        """
-        Empty current event queue and send it's contents to the game.
-        """
-        ret = []
-        while len(self.queue) != 0:
-            ret.append(self.queue.pop(0))
-        return ret
+        event = object()
+        event.type = pymlgame.E_PING
+        event.uid = uid
+        self.queue.put_nowait(event)
 
-    def quit(self):
+    def update_states(self, uid, addr, states):
         """
-        Kill the Controller process.
+        Got states of all buttons from a controller. Now check if something changed and create events if neccesary.
         """
-        self.server.server_close()
+        if self.controllers[uid]:
+            old_states = self.controllers[uid][2]
+            if old_states != states:
+                for key in range(14):
+                    if old_states[key] > states[key]:
+                        event = object()
+                        event.type = pymlgame.E_KEYUP
+                        event.uid = uid
+                        event.button = key
+                        self.queue.put_nowait(event)
+                    elif old_states[key] < states[key]:
+                        event = object()
+                        event.type = pymlgame.E_KEYDOWN
+                        event.uid = uid
+                        event.button = key
+                        self.queue.put_nowait(event)
+            self.controllers[uid][0] = addr
+            self.controllers[uid][1] = states
+            self.controllers[uid][2] = time.time()
 
+    def got_message(self, uid, addr, text):
+        """
+        The controller has send us a message.
+        """
+        event = object()
+        event.type = pymlgame.E_MESSAGE
+        event.uid = uid
+        event.text = text
+        self.queue.put_nowait(event)
 
-class Event(object):
-    """
-    Represents an event which has a type and optionally a uid and a button.
-    """
-    def __init__(self):
-        self.type = None
-        self.button = None
-        self.uid = None
+        self.controllers[uid][0] = addr
+        self.controllers[uid][2] = time.time()
+
+    def run(self):
+        """
+        Listen for clients.
+        """
+        while True:
+            data, addr = self.sock.recvfrom(1024)
+            data = data.decode('utf-8')
+            if data.startswith('/controller/'):
+                try:
+                    uid = data.split('/')[2]
+                    if uid == 'new':
+                        uid = self.new_controller(addr)
+                        self.sock.sendto('/uid/{}'.format(uid).encode('utf-8'), (addr, 11338))
+                    else:
+                        # just to be sure
+                        uid = int(uid)
+                        cmd = data.split('/')[3]
+                        if cmd == 'ping':
+                            self.ping(uid)
+                        elif cmd == 'kthxbye':
+                            self.del_controller(uid)
+                        elif cmd == 'states':
+                            payload = data[12 + len(str(uid)) + 8:]
+                            self.update_states(uid, addr, payload)
+                        elif cmd == 'text':
+                            payload = data[12 + len(str(uid)) + 6:]
+                            self.got_message(uid, addr, payload)
+                except IndexError:
+                    print('coitus interuptus detected!')
+
+            # find unused controllers and delete them
+            for uid, state in self.controllers.items():
+                if state[2] < time.time() - 60:
+                    self.controllers.pop(uid)
