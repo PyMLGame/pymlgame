@@ -4,18 +4,9 @@
 pymlgame - Surface
 """
 
-__author__ = 'Ricardo Band'
-__copyright__ = 'Copyright 2014, Ricardo Band'
-__credits__ = ['Ricardo Band']
-__license__ = 'MIT'
-__version__ = '0.1.1'
-__maintainer__ = 'Ricardo Band'
-__email__ = 'me@xengi.de'
-__status__ = 'Development'
-
 import math
 
-import pymlgame
+from pymlgame.locals import *
 
 
 class Surface(object):
@@ -29,7 +20,7 @@ class Surface(object):
         self.width = width
         self.height = height
         self.matrix = None
-        self.fill(pymlgame.BLACK)
+        self.fill(BLACK)
 
     def fill(self, color):
         """
@@ -73,8 +64,7 @@ class Surface(object):
             self.draw_dot((pos[0], pos[1] + y), color)
             self.draw_dot((pos[0] + size[0] - 1, pos[1] + y), color)
         # draw filled rect
-        #TODO: find out if the rect is at least 3x3 to actually have a filling
-        if fillcolor:
+        if fillcolor and size[0] >= 3 and size[1] >= 3:
             for x in range(size[0] - 2):
                 for y in range(size[1] - 2):
                     self.draw_dot((pos[0] + 1 + x, pos[1] + 1 + y), fillcolor)
@@ -117,6 +107,7 @@ class Surface(object):
         """
         Replaces a color on a surface with another one.
         """
+        #TODO: find a faster way to do this (maybe a nice list comprehension?)
         for x in range(self.width):
             for y in range(self.height):
                 if self.matrix[x][y] == before:

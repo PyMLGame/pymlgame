@@ -4,25 +4,17 @@
 pymlgame - Screen
 """
 
-__author__ = 'Ricardo Band'
-__copyright__ = 'Copyright 2014, Ricardo Band'
-__credits__ = ['Ricardo Band']
-__license__ = 'MIT'
-__version__ = '0.1.1'
-__maintainer__ = 'Ricardo Band'
-__email__ = 'me@xengi.de'
-__status__ = 'Development'
-
 import socket
 
-import pymlgame
+from pymlgame.locals import *
+from pymlgame.surface import Surface
 
 
 class Screen(object):
     """
     Represents the Mate Light screen and has all the drawing methods.
     """
-    def __init__(self, host, port, width=40, height=16):
+    def __init__(self, host='localhost', port=1337, width=40, height=16):
         """
         Create a screen with default size and fill it with black pixels.
         """
@@ -38,8 +30,8 @@ class Screen(object):
         """
         Fill the screen with black pixels
         """
-        surface = pymlgame.Surface(self.width, self.height)
-        surface.fill(pymlgame.BLACK)
+        surface = Surface(self.width, self.height)
+        surface.fill(BLACK)
         self.matrix = surface.matrix
 
     def update(self):
