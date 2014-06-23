@@ -29,7 +29,7 @@ class ReceiverThread(Thread):
     """
     This thread will listen on a UDP port for packets from the game.
     """
-    def __init__(self, host='127.0.0.1', port=11337):
+    def __init__(self, host='0.0.0.0', port=11337):
         """
         Creates the socket and binds it to the given host and port.
         """
@@ -65,7 +65,7 @@ class ReceiverThread(Thread):
 
 
 class Controller(object):
-    def __init__(self, game_host='127.0.0.1', game_port=1338, host='127.0.0.1', port=11337):
+    def __init__(self, game_host='127.0.0.1', game_port=1338, host='0.0.0.0', port=11337):
         self.game_host = game_host  # Host of Mate Light
         self.game_port = game_port  # Port of Mate Light
         self.host = host  # Host of ReceiverThread
@@ -177,7 +177,7 @@ class Controller(object):
 
 
 if __name__ == '__main__':
-    ctlr = Controller('127.0.0.1', 1338, '127.0.0.1', 11337)
+    ctlr = Controller('127.0.0.1', 1338, '0.0.0.0', 11337)
     try:
         while True:
             ctlr.handle_inputs()
