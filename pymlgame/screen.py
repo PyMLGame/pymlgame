@@ -14,7 +14,7 @@ class Screen(object):
     """
     Represents the Mate Light screen and has all the drawing methods.
     """
-    def __init__(self, host='localhost', port=1337, width=40, height=16):
+    def __init__(self, host='127.0.0.1', port=1337, width=40, height=16):
         """
         Create a screen with default size and fill it with black pixels.
         """

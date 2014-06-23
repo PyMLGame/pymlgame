@@ -13,7 +13,7 @@ __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
@@ -101,5 +101,5 @@ class Emu(object):
 
 
 if __name__ == '__main__':
-    EMU = Emu()
+    EMU = Emu(40, 16, '127.0.0.1', 1337)
     EMU.gameloop()

@@ -4,7 +4,7 @@ __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
@@ -18,7 +18,7 @@ from pymlgame.controller import Controller
 _ctlr = Controller()
 
 
-def init(host='127.0.0.1', port=1338):
+def init(host='0.0.0.0', port=1338):
     """
     Initialize pymlgame. This creates a controller thread that listens for game controllers and events.
     """

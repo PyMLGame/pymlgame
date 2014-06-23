@@ -13,7 +13,7 @@ __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
@@ -64,9 +64,7 @@ class Game(object):
         """
         Update the screens contents in every loop.
         """
-        # this is not really neccesary because the surface is black after
-        # initializing
-
+        # this is not really neccesary because the surface is black after initializing
         self.corners.fill(BLACK)
         self.corners.draw_dot((0, 0), self.colors[0])
         self.corners.draw_dot((self.screen.width - 1, 0), self.colors[0])
