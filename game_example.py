@@ -1,25 +1,30 @@
-#!/usr/bin/env python3.3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
 pymlgame - example game
 =======================
 
-This example shows how a simple pymlgame could be written. You also need a
-connected controller to actually see something happening. You can use the
-controller example for this.
+This example shows how a simple pymlgame could be written. You also need a connected controller to actually see
+something happening. You can use the controller example for this.
 """
 
 __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
 
+from datetime import datetime
+
 import pymlgame
+from pymlgame.locals import *
+from pymlgame.screen import Screen
+from pymlgame.clock import Clock
+from pymlgame.surface import Surface
 
 
 class Game(object):
@@ -34,52 +39,46 @@ class Game(object):
         self.port = port
         self.width = width
         self.height = height
-        self.screen = pymlgame.Screen(self.host, self.port,
-                                      self.width, self.height)
-        self.clock = pymlgame.Clock()
+
+        self.players = {}
+
+        pymlgame.init()
+        self.screen = Screen(self.host, self.port,
+                             self.width, self.height)
+        self.clock = Clock(15)
         self.running = True
-        self.colors = [pymlgame.WHITE,
-                       pymlgame.BLUE,
-                       pymlgame.GREEN,
-                       pymlgame.CYAN,
-                       pymlgame.MAGENTA,
-                       pymlgame.YELLOW,
-                       pymlgame.RED]
+        self.colors = [WHITE, BLUE, GREEN, CYAN, MAGENTA, YELLOW, RED]
 
         # surfaces
-        self.corners = pymlgame.Surface(self.screen.width, self.screen.height)
-        self.lines = pymlgame.Surface(int(self.screen.width / 2) - 2,
-                                      int(self.screen.height / 2) - 2)
-        self.rects = pymlgame.Surface(int(self.screen.width / 2) - 2,
-                                      int(self.screen.height / 2) - 2)
-        self.circle = pymlgame.Surface(int(self.screen.width / 2) - 2,
-                                       int(self.screen.height / 2) - 2)
-        self.filled = pymlgame.Surface(int(self.screen.width / 2) - 2,
-                                       int(self.screen.height / 2) - 2)
-
-        self.ctlr = pymlgame.Controller(self.host, self.port + 1)
+        self.corners = Surface(self.screen.width, self.screen.height)
+        self.lines = Surface(int(self.screen.width / 2) - 2,
+                             int(self.screen.height / 2) - 2)
+        self.rects = Surface(int(self.screen.width / 2) - 2,
+                             int(self.screen.height / 2) - 2)
+        self.circle = Surface(int(self.screen.width / 2) - 2,
+                              int(self.screen.height / 2) - 2)
+        self.filled = Surface(int(self.screen.width / 2) - 2,
+                              int(self.screen.height / 2) - 2)
 
     def update(self):
         """
         Update the screens contents in every loop.
         """
-        # this is not really neccesary because the surface is black after
-        # initializing
-
-        self.corners.fill(pymlgame.BLACK)
+        # this is not really neccesary because the surface is black after initializing
+        self.corners.fill(BLACK)
         self.corners.draw_dot((0, 0), self.colors[0])
         self.corners.draw_dot((self.screen.width - 1, 0), self.colors[0])
         self.corners.draw_dot((self.screen.width - 1, self.screen.height - 1),
                               self.colors[0])
         self.corners.draw_dot((0, self.screen.height - 1), self.colors[0])
 
-        self.lines.fill(pymlgame.BLACK)
+        self.lines.fill(BLACK)
         self.lines.draw_line((1, 0), (self.lines.width - 1, 0), self.colors[1])
         self.lines.draw_line((0, 1), (0, self.lines.height - 1), self.colors[3])
         self.lines.draw_line((0, 0), (self.lines.width - 1,
                                       self.lines.height - 1), self.colors[2])
 
-        self.rects.fill(pymlgame.BLACK)
+        self.rects.fill(BLACK)
         self.rects.draw_rect((0, 0), (int(self.rects.width / 2) - 1,
                                       self.rects.height),
                              self.colors[2], self.colors[3])
@@ -88,7 +87,7 @@ class Game(object):
                               self.rects.height),
                              self.colors[3], self.colors[2])
 
-        self.circle.fill(pymlgame.BLACK)
+        self.circle.fill(BLACK)
         radius = int(min(self.circle.width, self.circle.height) / 2) - 1
         self.circle.draw_circle((int(self.circle.width / 2) - 1,
                                  int(self.circle.height / 2) - 1), radius,
@@ -109,23 +108,28 @@ class Game(object):
                                        int(self.screen.height / 2) + 1))
 
         self.screen.update()
-        self.clock.tick(2)
+        self.clock.tick()
 
     def handle_events(self):
         """
         Loop through all events.
         """
-        for event in self.ctlr.get_events():
-            if event.type == pymlgame.NEWCTLR:
-                print('new ctlr with uid:', event.uid)
-            elif event.type == pymlgame.KEYDOWN:
-                print('key', event.button, 'down on', event.uid)
+        for event in pymlgame.get_events():
+            if event.type == E_NEWCTLR:
+                #print(datetime.now(), '### new player connected with uid', event.uid)
+                self.players[event.uid] = {'name': 'alien{}'.format(event.uid), 'score': 0}
+            elif event.type == E_DISCONNECT:
+                #print(datetime.now(), '### player with uid {} disconnected'.format(event.uid))
+                self.players.pop(event.uid)
+            elif event.type == E_KEYDOWN:
+                #print(datetime.now(), '###', self.players[event.uid]['name'], 'pressed', event.button)
                 self.colors.append(self.colors.pop(0))
-            elif event.type == pymlgame.KEYUP:
-                print('key', event.button, 'up on', event.uid)
+            elif event.type == E_KEYUP:
+                #print(datetime.now(), '###', self.players[event.uid]['name'], 'released', event.button)
                 self.colors.append(self.colors.pop(0))
-            elif event.type == pymlgame.PING:
-                print('ping from', event.uid)
+            elif event.type == E_PING:
+                #print(datetime.now(), '### ping from', self.players[event.uid]['name'])
+                pass
 
     def gameloop(self):
         """
@@ -138,11 +142,9 @@ class Game(object):
                 self.render()
         except KeyboardInterrupt:
             pass
-        # don't forget to quit the controller process if your game ends.
-        # In future releases this will be done automatically.
-        self.ctlr.quit()
 
 
 if __name__ == '__main__':
-    GAME = Game('127.0.0.1', 1337, 50, 28)
+    GAME = Game('127.0.0.1', 1337, 40, 16)
+    #GAME = Game('matelight.cbrp3.c-base.org', 1337, 40, 16)
     GAME.gameloop()

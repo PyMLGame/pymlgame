@@ -9,7 +9,7 @@ __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
@@ -35,16 +35,16 @@ setup(name='pymlgame',
       description='pymlgame is an abstraction layer to easily build games for Mate Light inspired by pygame.',
       long_description=read('README.md'),
       download_url='https://github.com/c-base/pymlgame/archive/master.zip',
-      classifiers=['Development Status :: 3 - Alpha',
+      classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: MIT License',
                    'Natural Language :: English',
                    'Operating System :: POSIX :: Linux',
-                   'Programming Language :: Python :: 3.3',
+                   'Programming Language :: Python :: 3',
                    'Topic :: Games/Entertainment',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
       platforms='any',
       license=__license__,
       packages=['pymlgame'],
-      requires=['jsonrpclib-pelix'])
+      requires=[,])

@@ -4,15 +4,6 @@
 pymlgame - Clock
 """
 
-__author__ = 'Ricardo Band'
-__copyright__ = 'Copyright 2014, Ricardo Band'
-__credits__ = ['Ricardo Band']
-__license__ = 'MIT'
-__version__ = '0.1.1'
-__maintainer__ = 'Ricardo Band'
-__email__ = 'me@xengi.de'
-__status__ = 'Development'
-
 import time
 
 
@@ -20,14 +11,15 @@ class Clock(object):
     """
     Measure the time to adjust drawing rates.
     """
-    def __init__(self):
+    def __init__(self, fps):
         """
-        Get a fresh Clock.
+        Get a fresh Clock which ticks n times per second.
         """
-        pass
+        self.fps = fps
 
-    def tick(self, fps):
+    def tick(self):
         """
-        Let the Clock tick x times per second.
+        Let the Clock tick.
         """
-        time.sleep(1.0/fps)
+        #TODO: I think this is not the correct way. Should think about this again..
+        time.sleep(1.0/self.fps)

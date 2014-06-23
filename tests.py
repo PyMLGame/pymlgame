@@ -9,17 +9,14 @@ __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
 
 import time
-import math
 import random
 import unittest
-
-import jsonrpclib
 
 import pymlgame
 
@@ -45,7 +42,7 @@ class ScreenTest(unittest.TestCase):
 
     def test_reset(self):
         surface = pymlgame.Surface(TEST_WIDTH, TEST_HEIGHT)
-        surface.fill(pymlgame.MAGENTA, 1.0)
+        surface.fill(pymlgame.MAGENTA)
         self.screen.blit(surface, (0, 0))
 
         for _ in range(10):
@@ -65,15 +62,14 @@ class ScreenTest(unittest.TestCase):
         self.assertEqual(len(self.screen.matrix[TEST_WIDTH - 1]), TEST_HEIGHT)
 
         self.assertEqual(self.screen.matrix[0][0], pymlgame.BLACK)
-        self.assertEqual(self.screen.matrix[TEST_WIDTH - 1][TEST_HEIGHT - 1],
-                         pymlgame.Surface.get_color(pymlgame.BLACK, 0.1))
+        self.assertEqual(self.screen.matrix[TEST_WIDTH - 1][TEST_HEIGHT - 1], pymlgame.BLACK)
 
     def test_update(self):
         pass
 
     def test_blit(self):
         surface = pymlgame.Surface(TEST_WIDTH - 2, TEST_HEIGHT - 2)
-        surface.fill(pymlgame.WHITE, 1.0)
+        surface.fill(pymlgame.WHITE)
         self.screen.blit(surface, (1, 1))
 
         for x in range(TEST_WIDTH):
@@ -107,31 +103,25 @@ class SurfaceTest(unittest.TestCase):
         self.assertEqual(len(self.surface.matrix[TEST_WIDTH - 1]), TEST_HEIGHT)
 
         self.assertEqual(self.surface.matrix[0][0], pymlgame.BLACK)
-        self.assertEqual(self.surface.matrix[TEST_WIDTH - 1][TEST_HEIGHT - 1],
-                         self.surface.get_color(pymlgame.BLACK, 0.1))
+        self.assertEqual(self.surface.matrix[TEST_WIDTH - 1][TEST_HEIGHT - 1], pymlgame.BLACK)
 
     def test_fill(self):
-        self.surface.fill(pymlgame.BLUE, 0.5)
+        self.surface.fill(pymlgame.BLUE)
 
-        self.assertEqual(self.surface.matrix[0][0],
-                         self.surface.get_color(pymlgame.BLUE, 0.5))
-        self.assertEqual(self.surface.matrix[TEST_WIDTH - 1][0],
-                         self.surface.get_color(pymlgame.BLUE, 0.5))
-        self.assertEqual(self.surface.matrix[0][TEST_HEIGHT - 1],
-                         self.surface.get_color(pymlgame.BLUE, 0.5))
-        self.assertEqual(self.surface.matrix[TEST_WIDTH - 1][TEST_HEIGHT - 1],
-                         self.surface.get_color(pymlgame.BLUE, 0.5))
+        self.assertEqual(self.surface.matrix[0][0], pymlgame.BLUE)
+        self.assertEqual(self.surface.matrix[TEST_WIDTH - 1][0], pymlgame.BLUE)
+        self.assertEqual(self.surface.matrix[0][TEST_HEIGHT - 1], pymlgame.BLUE)
+        self.assertEqual(self.surface.matrix[TEST_WIDTH - 1][TEST_HEIGHT - 1], pymlgame.BLUE)
         for _ in range(10):
             self.assertEqual(self.surface.matrix[random.randrange(0, TEST_WIDTH)][random.randrange(0, TEST_HEIGHT)],
-                             self.surface.get_color(pymlgame.BLUE, 0.5))
+                             pymlgame.BLUE)
 
     def test_draw_dot(self):
         # create 10 random dots
-        randpoints = [(random.randrange(0, TEST_WIDTH),
-                       random.randrange(0, TEST_HEIGHT)) for _ in range(10)]
+        randpoints = [(random.randrange(0, TEST_WIDTH), random.randrange(0, TEST_HEIGHT)) for _ in range(10)]
         # draw the dots
         for point in randpoints:
-            self.surface.draw_dot(point, pymlgame.YELLOW, 1.0)
+            self.surface.draw_dot(point, pymlgame.YELLOW)
         # test if drawing was successful
         for x in range(TEST_WIDTH):
             for y in range(TEST_HEIGHT):
@@ -142,11 +132,10 @@ class SurfaceTest(unittest.TestCase):
                     self.assertEqual(color, pymlgame.BLACK)
 
     def test_draw_line(self):
-        self.surface.draw_line((1, 0), (TEST_WIDTH - 1, 0), pymlgame.GREY6, 1.0)
-        self.surface.draw_line((0, 1), (0, TEST_HEIGHT - 1), pymlgame.RED, 1.0)
+        self.surface.draw_line((1, 0), (TEST_WIDTH - 1, 0), pymlgame.GREY6)
+        self.surface.draw_line((0, 1), (0, TEST_HEIGHT - 1), pymlgame.RED)
         test_len = max(TEST_WIDTH, TEST_HEIGHT)
-        self.surface.draw_line((test_len - 2, test_len - 2), (2, 2),
-                               pymlgame.CYAN, 1.0)
+        self.surface.draw_line((test_len - 2, test_len - 2), (2, 2), pymlgame.CYAN)
 
         for x in range(1, TEST_WIDTH):
             self.assertEqual(self.surface.matrix[x][0], pymlgame.GREY6)
@@ -160,35 +149,31 @@ class SurfaceTest(unittest.TestCase):
             self.assertEqual(self.surface.matrix[z][z + 1], pymlgame.BLACK)
 
     def test_draw_rect(self):
-        self.surface.draw_rect((1, 1), (TEST_WIDTH - 2, TEST_HEIGHT - 2),
-                               pymlgame.DARKYELLOW, None, 0.3)
+        self.surface.draw_rect((1, 1), (TEST_WIDTH - 2, TEST_HEIGHT - 2), pymlgame.DARKYELLOW, None)
 
-        darkyel = self.surface.get_color(pymlgame.DARKYELLOW, 0.3)
         for x in range(TEST_WIDTH):
             for y in range(TEST_HEIGHT):
                 if x == 1 and 0 < y < TEST_HEIGHT - 1 or \
                    x == TEST_WIDTH - 2 and 0 < y < TEST_HEIGHT - 1 or \
                    TEST_WIDTH - 2 > x > 1 == y or \
                    1 < x < TEST_WIDTH - 2 and y == TEST_HEIGHT - 2:
-                    self.assertEqual(self.surface.matrix[x][y], darkyel,
-                                     '{},{}'.format(x, y))
+                    self.assertEqual(self.surface.matrix[x][y], pymlgame.DARKYELLOW, '{},{}'.format(x, y))
                 else:
                     self.assertEqual(self.surface.matrix[x][y], pymlgame.BLACK)
 
         self.surface.fill(pymlgame.BLACK)
-        self.surface.draw_rect((int(TEST_WIDTH / 2) + 1,
-                                int(TEST_HEIGHT / 2) + 1), (1, 1),
-                               pymlgame.MAGENTA, pymlgame.DARKCYAN, 1.0)
+        self.surface.draw_rect((int(TEST_WIDTH / 2) + 1, int(TEST_HEIGHT / 2) + 1),
+                               (1, 1), pymlgame.MAGENTA, pymlgame.DARKCYAN)
 
     def test_draw_circle(self):
         #TODO: invent a way to draw this, then a way to test this
         pos = (int(TEST_WIDTH / 2) - 1, int(TEST_HEIGHT / 2) - 1)
         radius = int(min(TEST_WIDTH, TEST_HEIGHT) / 2) - 2
-        self.surface.draw_circle(pos, radius, pymlgame.GREEN, None, 1.0)
+        self.surface.draw_circle(pos, radius, pymlgame.GREEN, None)
 
     def test_blit(self):
         surface = pymlgame.Surface(TEST_WIDTH - 2, TEST_HEIGHT - 2)
-        surface.fill(pymlgame.WHITE, 1.0)
+        surface.fill(pymlgame.WHITE)
         self.surface.blit(surface, (1, 1))
 
         for x in range(TEST_WIDTH):
@@ -197,15 +182,6 @@ class SurfaceTest(unittest.TestCase):
                     self.assertEqual(self.surface.matrix[x][y], pymlgame.WHITE)
                 else:
                     self.assertEqual(self.surface.matrix[x][y], pymlgame.BLACK)
-
-    def test_get_color(self):
-        self.assertEqual(pymlgame.Surface.get_color(pymlgame.GREEN, 1.0),
-                         pymlgame.GREEN)
-        self.assertEqual(pymlgame.Surface.get_color(pymlgame.WHITE, 0.0),
-                         pymlgame.BLACK)
-        self.assertEqual(pymlgame.Surface.get_color(pymlgame.WHITE, 0.5),
-                         tuple([math.floor(val * 0.5)
-                                for val in pymlgame.WHITE]))
 
 
 class ClockTest(unittest.TestCase):
@@ -223,8 +199,7 @@ class ClockTest(unittest.TestCase):
 class Controllertests(unittest.TestCase):
     def setUp(self):
         self.controller = pymlgame.Controller(TEST_RPC_HOST, TEST_RPC_PORT)
-        self.server = jsonrpclib.Server('http://{}:{}'.format(TEST_RPC_HOST,
-                                                              TEST_RPC_PORT))
+        self.server = jsonrpclib.Server('http://{}:{}'.format(TEST_RPC_HOST, TEST_RPC_PORT))
 
     def tearDown(self):
         self.controller.quit()
