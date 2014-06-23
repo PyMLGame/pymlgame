@@ -33,28 +33,28 @@ This is the coitus protocol that handles the communication between the game and 
 Controller -> Game
 ------------------
 
-### /controller/new/<port>
+### /controller/new/&lt;port&gt;
 
-Connect a new controller to the game. Game will answer with /uid/<uid>. This is also known as 'anpymln'.
+Connect a new controller to the game. Game will answer with /uid/&lt;uid&gt;. This is also known as 'anpymln'.
 
-### /controller/<uid>/ping/<port>
+### /controller/&lt;uid&gt;/ping/&lt;port&gt;
 
 Tell the game that the controller is still in use and update it's address and port. Use this once a minute or the
 controller will get deleted.
 
-### /controller/<uid>/kthxbye
+### /controller/&lt;uid&gt;/kthxbye
 
 Disconnect the controller properly. In theory you could just wait 60s but this is the cleaner way and most games would
 be very happy if you use this.
 
-###/controller/<uid>/states/<states>
+###/controller/&lt;uid&gt;/states/&lt;states&gt;
 
 Send the states of your controller keys. Always send all 14 states, even if your controller doesn't have 14 buttons.
 The states should be an array with 0 for key not pressed and 1 for key pressed. So if you're pressing the Up button and
 X the states array should look like this: 10000010000000
 You can lookup all possible buttons and there location in the array in pymlgame/locals.py.
 
-### /controller/<uid>/text/<text>
+### /controller/&lt;uid&gt;/text/&lt;text&gt;
 
 *Optional*
 
@@ -65,24 +65,24 @@ without this function but you can use it if your controller is capable of text i
 Game -> Controller
 ------------------
 
-### /uid/<uid>
+### /uid/&lt;uid&gt;
 
 Tell the controller its uid. This is ideally an integer.
 
-### /rumble/<duration>
+### /rumble/&lt;duration&gt;
 
 *Optional*
 
 Tell the controller to rumble. Duration should be given in milliseconds. Not all controllers have the ability to rumble.
 Maybe they do it in an optical way.
 
-### /message/<text>
+### /message/&lt;text&gt;
 
 *Optional*
 
 Send some text to the controller. Be aware that not all controllers can display text, so don't send important things.
 
-### /download/<url>
+### /download/&lt;url&gt;
 
 *Optional*
 
@@ -91,7 +91,7 @@ file so that the player can hear some ingame sounds. Use this function everytime
 could have deleted the files after playing. Controllers should ensure that files already downloaded gets downloaded
 again to reduce loading times for games that have been played before.
 
-### /play/<file>
+### /play/&lt;file&gt;
 
 *Optional*
 
