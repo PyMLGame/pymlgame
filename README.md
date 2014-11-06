@@ -1,3 +1,5 @@
+![PyMLGame Logo][pymlgame_header]
+
 pymlgame
 ========
 
@@ -112,3 +114,5 @@ use a controller with is capable of these features.
 ---
 
 Have fun while playing pymlgames on Mate Light! :D
+
+[pymlgame_header]: https://github.com/PyMLGame/pymlgame/raw/master/header.png "PyMLGame"
