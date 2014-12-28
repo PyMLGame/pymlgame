@@ -98,7 +98,7 @@ class Controller(object):
         self.rumble_active = False
         self.uid = None
 
-        self._receiver = ReceiverThread(host, port)
+        self._receiver = ReceiverThread(self.host, self.port)
         self._receiver.setDaemon(True)
         self._receiver.start()
 
