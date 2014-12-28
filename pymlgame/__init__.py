@@ -9,10 +9,10 @@ __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
 
-# from pymlgame.locals import *
-# from pymlgame.screen import Screen
-# from pymlgame.clock import Clock
-# from pymlgame.surface import Surface
+from pymlgame.locals import *
+from pymlgame.screen import Screen
+from pymlgame.clock import Clock
+from pymlgame.surface import Surface
 from pymlgame.controller import Controller
 
 _ctlr = Controller()

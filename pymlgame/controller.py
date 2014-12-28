@@ -4,6 +4,7 @@
 pymlgame - Controller
 """
 
+from uuid import uuid4
 import time
 from datetime import datetime
 import socket
@@ -19,8 +20,6 @@ class Controller(Thread):
     A controller can be a game controller attached to the system or any other input that can trigger the controller
     functions like a smartphone app.
     """
-    _next_uid = 0
-
     def __init__(self, host='0.0.0.0', port=1338):
         """
         Creates a controller deamon
@@ -37,29 +36,25 @@ class Controller(Thread):
         """
         Get an uid for your controller.
         """
-        #print(datetime.now(), '### new controller at', addr, ':', port)
         for uid, controller in self.controllers.items():
             if controller[0] == addr:
-                #print(datetime.now(), '### duplicate address. not adding this one.')
                 # duplicate address. sending the uid again
-                #print(datetime.now(), '>>> /uid/{}'.format(uid), addr, port)
+                print('/uid/{} => {}:{}'.format(uid, addr, port))
                 self.sock.sendto('/uid/{}'.format(uid).encode('utf-8'), (addr, port))
                 return False
 
         # get an uid and add the controller to the game
-        uid = self._next_uid
-        self._next_uid += 1
+        uid = str(uuid4())
         self.controllers[uid] = [addr, port, '00000000000000', time.time()]
 
         # tell the controller about it
-        #print(datetime.now(), '>>> /uid/{}'.format(uid), addr, port)
+        print('/uid/{} => {}:{}'.format(uid, addr, port))
         self.sock.sendto('/uid/{}'.format(uid).encode('utf-8'), (addr, port))
 
         # create event for pymlgame
         e = Event(uid, E_NEWCTLR)
         self.queue.put_nowait(e)
 
-        #print(datetime.now(), '### controller added with uid', uid)
         return uid
 
     def _del_controller(self, uid):
@@ -68,7 +63,6 @@ class Controller(Thread):
         """
         try:
             self.controllers.pop(uid)
-            #print(datetime.now(), '### controller', uid, 'deleted')
             e = Event(uid, E_DISCONNECT)
             self.queue.put_nowait(e)
         except KeyError:
@@ -97,13 +91,11 @@ class Controller(Thread):
         """
         #TODO: use try and catch all exceptions
         # test if uid exists
-        #print(datetime.now(), '### Checking states', states, 'for controller', uid)
         if self.controllers[uid]:
             # test if states have correct lenght
             if len(states) == 14:
                 old_states = self.controllers[uid][2]
                 if old_states != states:
-                    #print(datetime.now(), '### checking old states', old_states, 'against new states', states)
                     for key in range(14):
                         if int(old_states[key]) > int(states[key]):
                             e = Event(uid, E_KEYUP, key)
@@ -111,6 +103,7 @@ class Controller(Thread):
                         elif int(old_states[key]) < int(states[key]):
                             e = Event(uid, E_KEYDOWN, key)
                             self.queue.put_nowait(e)
+                self.controllers[uid][2] = states
             self.controllers[uid][3] = time.time()
 
     def _got_message(self, uid, text):
@@ -135,16 +128,14 @@ class Controller(Thread):
             addr = self.controllers[uid][0]
             port = self.controllers[uid][1]
             if event == E_MESSAGE:
-                #print(datetime.now(), '>>> /message/{}'.format(payload), addr, port)
+                print('/message/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto('/message/{}'.format(payload).encode('utf-8'), (addr, port))
             elif event == E_RUMBLE:
-                #print(datetime.now(), '>>> /rumble/{}'.format(payload), addr, port)
+                print('/rumble/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto('/rumble/{}'.format(payload).encode('utf-8'), (addr, port))
             else:
-                #print(datetime.now(), '### Unknown event type.')
                 pass
         else:
-            #print(datetime.now(), '### This UID ({}) doesn\'t exist.'.format(uid))
             pass
         return False
 
@@ -156,7 +147,7 @@ class Controller(Thread):
             data, sender = self.sock.recvfrom(1024)
             addr = sender[0]
             msg = data.decode('utf-8')
-            #print(datetime.now(), '<<<', msg)
+            print('New msg: ' + msg)
             if msg.startswith('/controller/'):
                 try:
                     uid = msg.split('/')[2]
@@ -164,7 +155,6 @@ class Controller(Thread):
                         port = int(msg.split('/')[3])
                         self._new_controller(addr, port)
                     else:
-                        uid = int(uid)
                         cmd = msg.split('/')[3]
                         if cmd == 'ping':
                             port = msg.split('/')[3]
@@ -176,13 +166,11 @@ class Controller(Thread):
                             self._update_states(uid, states)
                         elif cmd == 'text':
                             # /controller/<uid>/text/<text>
-                            text = msg[12 + len(str(uid)) + 6:]
+                            text = msg[12 + len(uid) + 6:]
                             self._got_message(uid, text)
                 except IndexError or KeyError:
-                    #print(datetime.now(), '### Error in coitus protocol.')
                     pass
             else:
-                #print(datetime.now(), '### This thing doesn\'t fit:', msg)
                 pass
 
             # find unused controllers and delete them
