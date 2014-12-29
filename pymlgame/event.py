@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pymlgame - Event
+PyMLGame - Event
 """
 
 from pymlgame.locals import E_KEYDOWN, E_KEYUP

@@ -57,7 +57,6 @@ class Emu(object):
         self.clock = pygame.time.Clock()
         self.matrix = []
         for c in range(self.width * self.height * 3):
-            # fill matrix with black color
             self.matrix.append(0)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

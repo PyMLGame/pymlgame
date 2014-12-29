@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pymlgame - Controller
+PyMLGame - Controller
 """
 
 from uuid import uuid4
@@ -11,7 +11,7 @@ import socket
 from queue import Queue
 from threading import Thread
 
-from pymlgame.locals import *
+from pymlgame.locals import E_NEWCTLR, E_DISCONNECT, E_PING, E_KEYUP, E_KEYDOWN, E_MESSAGE, E_RUMBLE
 from pymlgame.event import Event
 
 
@@ -39,7 +39,7 @@ class Controller(Thread):
         for uid, controller in self.controllers.items():
             if controller[0] == addr:
                 # duplicate address. sending the uid again
-                print('/uid/{} => {}:{}'.format(uid, addr, port))
+                #print('/uid/{} => {}:{}'.format(uid, addr, port))
                 self.sock.sendto('/uid/{}'.format(uid).encode('utf-8'), (addr, port))
                 return False
 
@@ -48,7 +48,7 @@ class Controller(Thread):
         self.controllers[uid] = [addr, port, '00000000000000', time.time()]
 
         # tell the controller about it
-        print('/uid/{} => {}:{}'.format(uid, addr, port))
+        #print('/uid/{} => {}:{}'.format(uid, addr, port))
         self.sock.sendto('/uid/{}'.format(uid).encode('utf-8'), (addr, port))
 
         # create event for pymlgame
@@ -128,10 +128,10 @@ class Controller(Thread):
             addr = self.controllers[uid][0]
             port = self.controllers[uid][1]
             if event == E_MESSAGE:
-                print('/message/{} => {}:{}'.format(payload, addr, port))
+                #print('/message/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto('/message/{}'.format(payload).encode('utf-8'), (addr, port))
             elif event == E_RUMBLE:
-                print('/rumble/{} => {}:{}'.format(payload, addr, port))
+                #print('/rumble/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto('/rumble/{}'.format(payload).encode('utf-8'), (addr, port))
             else:
                 pass
@@ -147,7 +147,6 @@ class Controller(Thread):
             data, sender = self.sock.recvfrom(1024)
             addr = sender[0]
             msg = data.decode('utf-8')
-            print('New msg: ' + msg)
             if msg.startswith('/controller/'):
                 try:
                     uid = msg.split('/')[2]

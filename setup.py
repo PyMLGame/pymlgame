@@ -9,7 +9,7 @@ __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
@@ -25,16 +25,16 @@ from distutils.core import setup
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-setup(name='pymlgame',
+setup(name='PyMLGame',
       version=__version__,
       author=__author__,
       author_email=__email__,
       maintainer=__maintainer__,
       maintainer_email=__email__,
-      url='http://github.com/c-base/pymlgame',
-      description='pymlgame is an abstraction layer to easily build games for Mate Light inspired by pygame.',
+      url='http://github.com/PyMLGame/pymlgame',
+      description='PyMLGame is an abstraction layer to easily build games for Mate Light inspired by PyGame.',
       long_description=read('README.md'),
-      download_url='https://github.com/c-base/pymlgame/archive/master.zip',
+      download_url='https://github.com/PyMLGame/pymlgame/archive/master.zip',
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
