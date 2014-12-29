@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 """
-pymlgame - Surface
+PyMLGame - Surface
 """
 
 import math
 
-from pymlgame.locals import *
+from pymlgame.locals import BLACK
 
 
 class Surface(object):

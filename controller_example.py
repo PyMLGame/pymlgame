@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
 """
@@ -18,6 +18,8 @@ from threading import Thread
 
 import pygame
 
+DEBUG = True
+
 # define some constants
 E_UID = pygame.USEREVENT + 1
 E_DOWNLOAD = pygame.USEREVENT + 2
@@ -29,7 +31,7 @@ class ReceiverThread(Thread):
     """
     This thread will listen on a UDP port for packets from the game.
     """
-    def __init__(self, host='0.0.0.0', port=11337):
+    def __init__(self, host='0.0.0.0', port=1338):
         """
         Creates the socket and binds it to the given host and port.
         """
@@ -48,24 +50,26 @@ class ReceiverThread(Thread):
             logging.warning('example warning')
             logging.error('example error')
             logging.critical('example critical')
-            #print(datetime.now(), '<<< {}'.format(data))
             if data.startswith('/uid/'):
-                #print(datetime.now(), '### uid', data[5:], 'received')
                 e = pygame.event.Event(E_UID, {'uid': int(data[5:])})
                 pygame.event.post(e)
+                if DEBUG: logging.info('uid received: {}'.format(data[5:]))
             elif data.startswith('/download/'):
                 e = pygame.event.Event(E_DOWNLOAD, {'url': str(data[10:])})
                 pygame.event.post(e)
+                if DEBUG: logging.info('download of {} triggered'.format(data[10:]))
             elif data.startswith('/play/'):
                 e = pygame.event.Event(E_PLAY, {'filename': str(data[6:])})
                 pygame.event.post(e)
+                if DEBUG: logging.info('playback of {} triggered'.format(data[6:]))
             elif data.startswith('/rumble/'):
-                e = pygame.event.Event(E_RUMBLE, {'duration': float(data[8:].replace(',', '.'))})
+                e = pygame.event.Event(E_RUMBLE, {'duration': int(data[8:])})
                 pygame.event.post(e)
+                if DEBUG: logging.info('request rumble for {}ms'.format(data[8:]))
 
 
 class Controller(object):
-    def __init__(self, game_host='127.0.0.1', game_port=1338, host='0.0.0.0', port=11337):
+    def __init__(self, game_host='127.0.0.1', game_port=1338, host='0.0.0.0', port=1338):
         self.game_host = game_host  # Host of Mate Light
         self.game_port = game_port  # Port of Mate Light
         self.host = host  # Host of ReceiverThread
@@ -98,41 +102,47 @@ class Controller(object):
         self.rumble_active = False
         self.uid = None
 
-        self._receiver = ReceiverThread(host, port)
+        self._receiver = ReceiverThread(self.host, self.port)
         self._receiver.setDaemon(True)
         self._receiver.start()
 
     def ping(self):
         if self.uid:
+            if DEBUG: logging.info('sending ping')
             msg = '/controller/{}/ping/{}'.format(self.uid, self._receiver.port)
             self.sock.sendto(msg.encode('utf-8'), (self.game_host, self.game_port))
-            #print(datetime.now(), '>>>', msg)
 
     def send_keys(self):
         # alternative states creation: [1 if k else 0 for k in self.keys]
         states = '/controller/{}/states/{}'.format(self.uid, ''.join([str(k) for k in self.keys]))
+        if DEBUG: logging.info('sending states {}'.format(''.join([str(k) for k in self.keys])))
         self.sock.sendto(states.encode('utf-8'), (self.game_host, self.game_port))
-        #print(datetime.now(), '>>>' + states)
         self.timeout = time.time()
 
     def send_message(self, msg):
+        if DEBUG: logging.info('sending of messages not yet implemented')
         pass
 
     def disconnect(self):
+        if DEBUG: logging.info('disconnecting from game')
         msg = '/controller/{}/kthxbye'.format(self.uid)
         self.sock.sendto(msg.encode('utf-8'), (self.game_host, self.game_port))
 
     def connect(self):
+        if DEBUG: logging.info('connecting to game')
         msg = '/controller/new/{}'.format(self.port)
         self.sock.sendto(msg.encode('utf-8'), (self.game_host, self.game_port))
 
     def rumble(self, duration):
+        if DEBUG: logging.info('rumble not yet implemented')
         pass
 
     def download_sound(self, url):
+        if DEBUG: logging.info('downloading of media files not yet implemented')
         pass
 
     def play_sound(self, filename):
+        if DEBUG: logging.info('playing media files not yet implemented')
         pass
 
     def handle_inputs(self):
@@ -147,11 +157,9 @@ class Controller(object):
             elif event.type == pygame.MOUSEBUTTONUP:
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
             elif event.type == E_UID:
-                #print(datetime.now(), '### UID event received', event.uid)
                 self.uid = event.uid
 
             if self.uid is not None:
-                #print(datetime.now(), '### UID set. checking other events')
                 if event.type == E_DOWNLOAD:
                     self.download_sound(event.url)
                 elif event.type == E_PLAY:
@@ -162,22 +170,19 @@ class Controller(object):
                     try:
                         button = self.mapping[event.key]
                         if event.type == pygame.KEYDOWN:
-                            #print('{} | {}'.format(event.key, button))
                             self.keys[button] = 1
                         elif event.type == pygame.KEYUP:
-                            #print('{} | {}'.format(event.key, button))
                             self.keys[button] = 0
                         self.send_keys()
                     except KeyError:
                         break
             else:
-                #print(datetime.now(), '### UID not set. connecting to game.')
                 self.connect()
                 time.sleep(1)
 
 
 if __name__ == '__main__':
-    ctlr = Controller('127.0.0.1', 1338, '0.0.0.0', 11337)
+    ctlr = Controller('127.0.0.1', 1338, '0.0.0.0', 1338)
     try:
         while True:
             ctlr.handle_inputs()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pymlgame - Clock
+PyMLGame - Clock
 """
 
 import time
@@ -21,5 +21,5 @@ class Clock(object):
         """
         Let the Clock tick.
         """
-        #TODO: I think this is not the correct way. Should think about this again..
+        #TODO: I think this is not the correct way. I should think about this again..
         time.sleep(1.0/self.fps)
