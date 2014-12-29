@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 """
-pymlgame - Screen
+PyMLGame - Screen
 """
 
 import socket
 
-from pymlgame.locals import *
+from pymlgame.locals import BLACK
 from pymlgame.surface import Surface
 
 

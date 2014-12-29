@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pymlgame - Locals
+PyMLGame - Locals
 """
 
 # event types

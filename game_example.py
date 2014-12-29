@@ -13,7 +13,7 @@ __author__ = 'Ricardo Band'
 __copyright__ = 'Copyright 2014, Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 __maintainer__ = 'Ricardo Band'
 __email__ = 'me@xengi.de'
 __status__ = 'Development'
@@ -21,7 +21,7 @@ __status__ = 'Development'
 from datetime import datetime
 
 import pymlgame
-from pymlgame.locals import *
+from pymlgame.locals import WHITE, BLUE, GREEN, CYAN, MAGENTA, YELLOW, RED, BLACK, E_NEWCTLR, E_DISCONNECT, E_KEYDOWN, E_KEYUP, E_PING
 from pymlgame.screen import Screen
 from pymlgame.clock import Clock
 from pymlgame.surface import Surface
