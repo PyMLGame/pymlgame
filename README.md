@@ -3,7 +3,7 @@
 PyMLGame
 ========
 
-PyMLGame is an abstraction layer to easily build games for Mate Light inspired by PyGame.
+PyMLGame is an abstraction layer to easily build games for Mate Light inspired by [PyGame][pygame].
 
 You need 3 parts to actually have a running game on Mate Light.
 
@@ -15,12 +15,12 @@ You can build a game using the PyMLGame library. If you know the PyGame library 
 A controller
 ------------
 
-If you want players, your game needs a controller to have some inputs. Controllers should work with every game made with PyMLGame. There is a controller_example.py to play with. An Android based controller app is available [here][1].
+If you want players, your game needs a controller to have some inputs. Controllers should work with every game made with PyMLGame. There is a controller_example.py to play with. An Android based controller app is available [here][pymlctlr].
 
 Mate Light
 ----------
 
-To play PyMLGames you need the awesome Mate Light. You could use the one on [c-base space station][2], or build your own. If you're not near c-base and don't want to build your own, you can use the Mate Light emulator provided with PyMLGame.
+To play PyMLGames you need the awesome Mate Light. You could use the one on [c-base space station][c-base], or build your own. If you're not near c-base and don't want to build your own, you can use the Mate Light emulator provided with PyMLGame.
 
 
 Protocol
@@ -59,7 +59,7 @@ be very happy if you use this.
 
 Send the states of your controller keys. Always send all 14 states, even if your controller doesn't have 14 buttons.
 The states should be an array with 0 for key not pressed and 1 for key pressed. So if you're pressing the Up button and X button the states array should look like this: 10000010000000
-You can lookup all possible buttons and there location in the array in [pymlgame/locals.py][3].
+You can lookup all possible buttons and there location in the array in [pymlgame/locals.py][locals.py].
 
 ### /controller/&lt;uid&gt;/text/&lt;text&gt; *optional*
 
@@ -116,9 +116,10 @@ If your game uses some optional features, tell the players that they can have an
 
 ---
 
-Have fun while playing PyMLGames on Mate Light! :D
+Have fun while playing PyMLGames on Mate Light! :smiley:
 
 [pymlgame_header]: https://github.com/PyMLGame/pymlgame/raw/master/header.png "PyMLGame"
-[1]: https://github.com/PyMLGame/pymlgame-controller
-[2]: https://c-base.org/
-[3]: https://github.com/PyMLGame/pymlgame/blob/master/pymlgame/locals.py
+[pygame]: http://pygame.org/
+[pymlctlr]: https://github.com/PyMLGame/pymlgame-controller
+[c-base]: https://c-base.org/
+[locals.py]: https://github.com/PyMLGame/pymlgame/blob/master/pymlgame/locals.py
