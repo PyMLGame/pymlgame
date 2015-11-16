@@ -46,5 +46,4 @@ setup(name='PyMLGame',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
       platforms='any',
       license=__license__,
-      packages=['pymlgame'],
-      requires=[,])
+      packages=['pymlgame'])

@@ -15,7 +15,7 @@ __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
 __version__ = '0.3.0'
 __maintainer__ = 'Ricardo Band'
-__email__ = 'me@xengi.de'
+__email__ = 'email@ricardo.band'
 __status__ = 'Development'
 
 from datetime import datetime
