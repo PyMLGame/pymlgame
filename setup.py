@@ -28,6 +28,4 @@ setup(name='PyMLGame',
                    'Topic :: Games/Entertainment',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
       platforms='any',
-      license='MIT',
-      packages=['pymlgame'],
-      requires=[])
+      packages=['pymlgame'])
