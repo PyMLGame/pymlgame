@@ -4,12 +4,14 @@
 import os
 from distutils.core import setup
 
+from pymlgame import __version__
+
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='PyMLGame',
-      version='0.3.2',
+      version=__version__,
       author='Ricardo Band',
       author_email='email@ricardo.band',
       maintainer='Ricardo Band',
