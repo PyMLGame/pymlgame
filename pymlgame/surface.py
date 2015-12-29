@@ -151,4 +151,8 @@ class Surface(object):
         :type after: tuple
         """
         #TODO: find out if this actually works
-        ((self.matrix[x][y] = after for y in range(self.height) if self.matrix[x][y] == before) for x in range(self.width))
+        #((self.matrix[x][y] = after for y in range(self.height) if self.matrix[x][y] == before) for x in range(self.width))
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.matrix[x][y] == before:
+                    self.matrix[x][y] = after
