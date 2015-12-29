@@ -24,12 +24,12 @@ Options:
 """
 
 __author__ = 'Ricardo Band'
-__copyright__ = 'Copyright 2014, Ricardo Band'
+__copyright__ = 'Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 __maintainer__ = 'Ricardo Band'
-__email__ = 'me@xengi.de'
+__email__ = 'email@ricardo.band'
 __status__ = 'Development'
 
 import sys

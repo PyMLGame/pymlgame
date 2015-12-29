@@ -25,12 +25,20 @@ class Surface(object):
     def fill(self, color):
         """
         Fill the whole screen with the given color.
+
+        :param color: Color to use for filling
+        :type color: tuple
         """
         self.matrix = [[color for _ in range(self.height)] for _ in range(self.width)]
 
     def draw_dot(self, pos, color):
         """
         Draw one single dot with the given color on the screen.
+
+        :param pos: Position of the dot
+        :param color: COlor for the dot
+        :type pos: tuple
+        :type color: tuple
         """
         if 0 <= pos[0] < self.width and 0 <= pos[1] < self.height:
             self.matrix[pos[0]][pos[1]] = color
@@ -38,6 +46,13 @@ class Surface(object):
     def draw_line(self, start, end, color):
         """
         Draw a line with the given color on the screen.
+
+        :param start: Start point of the line
+        :param end: End point of the line
+        :param color: Color of the line
+        :type start: tuple
+        :type end: tuple
+        :type color: tuple
         """
         def dist(p, a, b):
             return (abs((b[0] - a[0]) * (a[1] - p[1]) - (a[0] - p[0]) * (b[1] - a[1])) /
@@ -54,6 +69,15 @@ class Surface(object):
     def draw_rect(self, pos, size, color, fillcolor=None):
         """
         Draw a rectangle with the given color on the screen and optionally fill it with fillcolor.
+
+        :param pos: Top left corner of the rectangle
+        :param size: Sieze of the rectangle
+        :param color: Color for borders
+        :param fillcolor: Color for infill
+        :type pos: tuple
+        :type size: tuple
+        :type color: tuple
+        :type fillcolor: tuple
         """
         # draw top and botton line
         for x in range(size[0]):
@@ -72,6 +96,15 @@ class Surface(object):
     def draw_circle(self, pos, radius, color, fillcolor=None):
         """
         Draw a circle with the given color on the screen and optionally fill it with fillcolor.
+
+        :param pos: Center of the circle
+        :param radius: Radius
+        :param color: Color for border
+        :param fillcolor: Color for infill
+        :type pos: tuple
+        :type radius: int
+        :type color: tuple
+        :type fillcolor: tuple
         """
         #TODO: This still produces rubbish but it's on a good way to success
         def dist(d, p, r):
@@ -95,6 +128,11 @@ class Surface(object):
     def blit(self, surface, pos=(0, 0)):
         """
         Blits a surface on this surface at pos
+
+        :param surface: Surface to blit
+        :param pos: Top left point to start blitting
+        :type surface: Surface
+        :type pos: tuple
         """
         for x in range(surface.width):
             for y in range(surface.height):
@@ -106,9 +144,11 @@ class Surface(object):
     def replace_color(self, before, after):
         """
         Replaces a color on a surface with another one.
+
+        :param before: Change all pixels with this color
+        :param after: To that color
+        :type before: tuple
+        :type after: tuple
         """
-        #TODO: find a faster way to do this (maybe a nice list comprehension?)
-        for x in range(self.width):
-            for y in range(self.height):
-                if self.matrix[x][y] == before:
-                    self.matrix[x][y] = after
+        #TODO: find out if this actually works
+        ((self.matrix[x][y] = after for y in range(self.height) if self.matrix[x][y] == before) for x in range(self.width))

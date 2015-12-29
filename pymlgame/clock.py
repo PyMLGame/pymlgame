@@ -14,6 +14,9 @@ class Clock(object):
     def __init__(self, fps):
         """
         Get a fresh Clock which ticks n times per second.
+
+        :param fps: Target frames per second
+        :type fps: int
         """
         self.fps = fps
 
@@ -22,4 +25,4 @@ class Clock(object):
         Let the Clock tick.
         """
         #TODO: I think this is not the correct way. I should think about this again..
-        time.sleep(1.0/self.fps)
+        time.sleep(1.0 / self.fps)
