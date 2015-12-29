@@ -5,6 +5,15 @@ pymlgame is an abstraction layer to easily build games for Mate Light inspired b
 
 You need 3 parts to actually have a running game on Mate Light.
 
+tl;dr
+-----
+
+```
+virtualenv env
+source env/bin/activate
+python setup.py install
+```
+
 The game
 --------
 
