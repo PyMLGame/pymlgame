@@ -10,12 +10,12 @@ something happening. You can use the controller example for this.
 """
 
 __author__ = 'Ricardo Band'
-__copyright__ = 'Copyright 2014, Ricardo Band'
+__copyright__ = 'Ricardo Band'
 __credits__ = ['Ricardo Band']
 __license__ = 'MIT'
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 __maintainer__ = 'Ricardo Band'
-__email__ = 'me@xengi.de'
+__email__ = 'email@ricardo.band'
 __status__ = 'Development'
 
 from datetime import datetime
@@ -117,7 +117,7 @@ class Game(object):
         for event in pymlgame.get_events():
             if event.type == E_NEWCTLR:
                 #print(datetime.now(), '### new player connected with uid', event.uid)
-                self.players[event.uid] = {'name': 'alien{}'.format(event.uid), 'score': 0}
+                self.players[event.uid] = {'name': 'alien_{}'.format(event.uid), 'score': 0}
             elif event.type == E_DISCONNECT:
                 #print(datetime.now(), '### player with uid {} disconnected'.format(event.uid))
                 self.players.pop(event.uid)

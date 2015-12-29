@@ -23,6 +23,11 @@ class Controller(Thread):
     def __init__(self, host='0.0.0.0', port=1338):
         """
         Creates a controller deamon
+
+        :param host: Bind to address
+        :param port: Bind to port
+        :type host: str
+        :type port: int
         """
         super(Controller, self).__init__()
         self.host = host
@@ -35,6 +40,13 @@ class Controller(Thread):
     def _new_controller(self, addr, port):
         """
         Get an uid for your controller.
+
+        :param addr: Address of the controller
+        :param port: Port of the controller
+        :type addr: str
+        :type port: int
+        :return: Unique id of the controller
+        :rtype: str
         """
         for uid, controller in self.controllers.items():
             if controller[0] == addr:
@@ -60,6 +72,9 @@ class Controller(Thread):
     def _del_controller(self, uid):
         """
         Remove controller from internal list and tell the game.
+
+        :param uid: Unique id of the controller
+        :type uid: str
         """
         try:
             self.controllers.pop(uid)
@@ -73,6 +88,13 @@ class Controller(Thread):
         """
         Just say hello so that pymlgame knows that your controller is still alive. Unused controllers will be deleted
         after a while. This function is also used to update the address and port of the controller if it has changed.
+
+        :param uid: Unique id of the controller
+        :param addr: Address of the controller
+        :param port: Port that the controller listens on
+        :type uid: str
+        :type addr: str
+        :type port: int
         """
         try:
             self.controllers[uid][0] = addr
@@ -88,6 +110,11 @@ class Controller(Thread):
     def _update_states(self, uid, states):
         """
         Got states of all buttons from a controller. Now check if something changed and create events if neccesary.
+
+        :param uid: Unique id of the controller
+        :param states: Buttons states
+        :type uid: str
+        :type states: str
         """
         #TODO: use try and catch all exceptions
         # test if uid exists
@@ -109,6 +136,11 @@ class Controller(Thread):
     def _got_message(self, uid, text):
         """
         The controller has send us a message.
+
+        :param uid: Unique id of the controller
+        :param text: Text to display
+        :type uid: str
+        :type text: str
         """
         #TODO: use try
         e = Event(uid, E_MESSAGE, text)
@@ -116,12 +148,19 @@ class Controller(Thread):
 
         self.controllers[uid][2] = time.time()
 
-    def send(self, uid, event, payload):
+    def send(self, uid, event, payload=None):
         """
         Send an event to a connected controller. Use pymlgame event type and correct payload.
         To send a message to the controller use pymlgame.E_MESSAGE event and a string as payload.
 
-        Returns the number of bytes send or False if something goes wrong.
+        :param uid: Unique id of the controller
+        :param event: Event type
+        :param payload: Payload of the event
+        :type uid: str
+        :type event: Event
+        :type payload: str
+        :return: Number of bytes send or False
+        :rtype: int
         """
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         if uid in self.controllers.keys():

@@ -53,6 +53,11 @@ class Screen(object):
     def blit(self, surface, pos=(0, 0)):
         """
         Blits a surface on the screen at pos
+
+        :param surface: Surface to blit
+        :param pos: Top left corner to start blitting
+        :type surface: Surface
+        :type pos: tuple
         """
         for x in range(surface.width):
             for y in range(surface.height):
@@ -61,6 +66,14 @@ class Screen(object):
                     self.matrix[point[0]][point[1]] = surface.matrix[x][y]
 
     def point_on_screen(self, pos):
+        """
+        Is the point still on the screen?
+
+        :param pos: Point
+        :type pos: tuple
+        :return: Is it?
+        :rtype: bool
+        """
         if 0 <= pos[0] < self.width and 0 <= pos[1] < self.height:
             return True
         else:

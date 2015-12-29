@@ -1,36 +1,19 @@
-#!/usr/bin/env python3.3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-"""
-pymlgame
-"""
-
-__author__ = 'Ricardo Band'
-__copyright__ = 'Copyright 2014, Ricardo Band'
-__credits__ = ['Ricardo Band']
-__license__ = 'MIT'
-__version__ = '0.3.0'
-__maintainer__ = 'Ricardo Band'
-__email__ = 'me@xengi.de'
-__status__ = 'Development'
 
 import os
 from distutils.core import setup
 
 
-# Utility function to read the README file.
-# Used for the long_description.  It's nice, because now 1) we have a top level
-# README file and 2) it's easier to type in the README file than to put a raw
-# string in below ...
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(name='PyMLGame',
-      version=__version__,
-      author=__author__,
-      author_email=__email__,
-      maintainer=__maintainer__,
-      maintainer_email=__email__,
+      version='0.3.1',
+      author='Ricardo Band',
+      author_email='email@ricardo.band',
+      maintainer='Ricardo Band',
+      maintainer_email='email@ricardo.band',
       url='http://github.com/PyMLGame/pymlgame',
       description='PyMLGame is an abstraction layer to easily build games for Mate Light inspired by PyGame.',
       long_description=read('README.md'),
@@ -45,6 +28,6 @@ setup(name='PyMLGame',
                    'Topic :: Games/Entertainment',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
       platforms='any',
-      license=__license__,
+      license='MIT',
       packages=['pymlgame'],
-      requires=[,])
+      requires=[])
