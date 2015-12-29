@@ -51,7 +51,7 @@ class ReceiverThread(Thread):
             logging.error('example error')
             logging.critical('example critical')
             if data.startswith('/uid/'):
-                e = pygame.event.Event(E_UID, {'uid': int(data[5:])})
+                e = pygame.event.Event(E_UID, {'uid': data[5:]})
                 pygame.event.post(e)
                 if DEBUG: logging.info('uid received: {}'.format(data[5:]))
             elif data.startswith('/download/'):
