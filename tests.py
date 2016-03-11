@@ -157,7 +157,7 @@ class SurfaceTest(unittest.TestCase):
                    x == TEST_WIDTH - 2 and 0 < y < TEST_HEIGHT - 1 or \
                    TEST_WIDTH - 2 > x > 1 == y or \
                    1 < x < TEST_WIDTH - 2 and y == TEST_HEIGHT - 2:
-                    self.assertEqual(self.surface.matrix[x][y], pymlgame.DARKYELLOW, '{},{}'.format(x, y))
+                    self.assertEqual(self.surface.matrix[x][y], pymlgame.DARKYELLOW, '{0},{1}'.format(x, y))
                 else:
                     self.assertEqual(self.surface.matrix[x][y], pymlgame.BLACK)
 
@@ -199,7 +199,7 @@ class ClockTest(unittest.TestCase):
 class Controllertests(unittest.TestCase):
     def setUp(self):
         self.controller = pymlgame.Controller(TEST_RPC_HOST, TEST_RPC_PORT)
-        self.server = jsonrpclib.Server('http://{}:{}'.format(TEST_RPC_HOST, TEST_RPC_PORT))
+        self.server = jsonrpclib.Server('http://{0}:{1}'.format(TEST_RPC_HOST, TEST_RPC_PORT))
 
     def tearDown(self):
         self.controller.quit()

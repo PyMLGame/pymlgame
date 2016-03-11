@@ -53,19 +53,19 @@ class ReceiverThread(Thread):
             if data.startswith('/uid/'):
                 e = pygame.event.Event(E_UID, {'uid': data[5:]})
                 pygame.event.post(e)
-                if DEBUG: logging.info('uid received: {}'.format(data[5:]))
+                if DEBUG: logging.info('uid received: {0}'.format(data[5:]))
             elif data.startswith('/download/'):
                 e = pygame.event.Event(E_DOWNLOAD, {'url': str(data[10:])})
                 pygame.event.post(e)
-                if DEBUG: logging.info('download of {} triggered'.format(data[10:]))
+                if DEBUG: logging.info('download of {0} triggered'.format(data[10:]))
             elif data.startswith('/play/'):
                 e = pygame.event.Event(E_PLAY, {'filename': str(data[6:])})
                 pygame.event.post(e)
-                if DEBUG: logging.info('playback of {} triggered'.format(data[6:]))
+                if DEBUG: logging.info('playback of {0} triggered'.format(data[6:]))
             elif data.startswith('/rumble/'):
                 e = pygame.event.Event(E_RUMBLE, {'duration': int(data[8:])})
                 pygame.event.post(e)
-                if DEBUG: logging.info('request rumble for {}ms'.format(data[8:]))
+                if DEBUG: logging.info('request rumble for {0}ms'.format(data[8:]))
 
 
 class Controller(object):
@@ -109,13 +109,13 @@ class Controller(object):
     def ping(self):
         if self.uid:
             if DEBUG: logging.info('sending ping')
-            msg = '/controller/{}/ping/{}'.format(self.uid, self._receiver.port)
+            msg = '/controller/{0}/ping/{1}'.format(self.uid, self._receiver.port)
             self.sock.sendto(msg.encode('utf-8'), (self.game_host, self.game_port))
 
     def send_keys(self):
         # alternative states creation: [1 if k else 0 for k in self.keys]
-        states = '/controller/{}/states/{}'.format(self.uid, ''.join([str(k) for k in self.keys]))
-        if DEBUG: logging.info('sending states {}'.format(''.join([str(k) for k in self.keys])))
+        states = '/controller/{0}/states/{1}'.format(self.uid, ''.join([str(k) for k in self.keys]))
+        if DEBUG: logging.info('sending states {0}'.format(''.join([str(k) for k in self.keys])))
         self.sock.sendto(states.encode('utf-8'), (self.game_host, self.game_port))
         self.timeout = time.time()
 
@@ -125,12 +125,12 @@ class Controller(object):
 
     def disconnect(self):
         if DEBUG: logging.info('disconnecting from game')
-        msg = '/controller/{}/kthxbye'.format(self.uid)
+        msg = '/controller/{0}/kthxbye'.format(self.uid)
         self.sock.sendto(msg.encode('utf-8'), (self.game_host, self.game_port))
 
     def connect(self):
         if DEBUG: logging.info('connecting to game')
-        msg = '/controller/new/{}'.format(self.port)
+        msg = '/controller/new/{0}'.format(self.port)
         self.sock.sendto(msg.encode('utf-8'), (self.game_host, self.game_port))
 
     def rumble(self, duration):
