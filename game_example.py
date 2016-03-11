@@ -117,7 +117,7 @@ class Game(object):
         for event in pymlgame.get_events():
             if event.type == E_NEWCTLR:
                 #print(datetime.now(), '### new player connected with uid', event.uid)
-                self.players[event.uid] = {'name': 'alien_{}'.format(event.uid), 'score': 0}
+                self.players[event.uid] = {'name': 'alien_{0}'.format(event.uid), 'score': 0}
             elif event.type == E_DISCONNECT:
                 #print(datetime.now(), '### player with uid {} disconnected'.format(event.uid))
                 self.players.pop(event.uid)
