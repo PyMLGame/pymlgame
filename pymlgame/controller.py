@@ -1,18 +1,11 @@
-# -*- coding: utf-8 -*-
-
-"""
-PyMLGame - Controller
-"""
-
-from uuid import uuid4
-import time
-from datetime import datetime
+import uuid
 import socket
+import logging
 from queue import Queue
 from threading import Thread
+from datetime import datetime, timedelta
 
-from pymlgame.locals import E_NEWCTLR, E_DISCONNECT, E_PING, E_KEYUP, E_KEYDOWN, E_MESSAGE, E_RUMBLE
-from pymlgame.event import Event
+import pymlgame
 
 
 class Controller(Thread):
@@ -20,162 +13,162 @@ class Controller(Thread):
     A controller can be a game controller attached to the system or any other input that can trigger the controller
     functions like a smartphone app.
     """
-    def __init__(self, host='0.0.0.0', port=1338):
+    def __init__(self, host: str = '0.0.0.0', port: int = 1338):
         """
-        Creates a controller deamon
+        Creates a controller deamon.
 
         :param host: Bind to address
         :param port: Bind to port
         :type host: str
         :type port: int
         """
-        super(Controller, self).__init__()
-        self.host = host
-        self.port = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind((host, port))
+        super().__init__()
+
+        self.logger = logging.getLogger('controller')
+
+        self._host = host
+        self._port = port
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._sock.bind((host, port))
+
         self.queue = Queue()
+        # list of connected controllers
         self.controllers = {}
 
-    def _new_controller(self, addr, port):
+    def _new_controller(self, addr: str, port: int) -> uuid.UUID:
         """
-        Get an uid for your controller.
+        Get an id for your controller.
 
         :param addr: Address of the controller
         :param port: Port of the controller
         :type addr: str
         :type port: int
         :return: Unique id of the controller
-        :rtype: str
+        :rtype: uuid.UUID
         """
-        for uid, controller in self.controllers.items():
+        for id, controller in self.controllers.items():
             if controller[0] == addr:
-                # duplicate address. sending the uid again
-                #print('/uid/{} => {}:{}'.format(uid, addr, port))
-                self.sock.sendto('/uid/{}'.format(uid).encode('utf-8'), (addr, port))
-                return False
+                # duplicate address. sending the id again
+                #print('/id/{} => {}:{}'.format(id, addr, port))
+                self._sock.sendto(('/id/%s' % id).encode('utf-8'), (addr, port))
+                return None
 
-        # get an uid and add the controller to the game
-        uid = str(uuid4())
-        self.controllers[uid] = [addr, port, '00000000000000', time.time()]
+        # get an id and add the controller to the game
+        id = uuid.uuid4().hex
+        self.controllers[id] = {'addr': addr, 'port': port, 'states': '00000000000000', 'last_update': datetime.now()}
 
         # tell the controller about it
-        #print('/uid/{} => {}:{}'.format(uid, addr, port))
-        self.sock.sendto('/uid/{}'.format(uid).encode('utf-8'), (addr, port))
+        #print('/id/{} => {}:{}'.format(id, addr, port))
+        self._sock.sendto(('/id/%s' % id).encode('utf-8'), (addr, port))
 
         # create event for pymlgame
-        e = Event(uid, E_NEWCTLR)
+        e = pymlgame.Event(id, pymlgame.E_NEWCTLR)
         self.queue.put_nowait(e)
 
-        return uid
+        return id
 
-    def _del_controller(self, uid):
+    def _del_controller(self, id: str):
         """
         Remove controller from internal list and tell the game.
 
-        :param uid: Unique id of the controller
-        :type uid: str
+        :param id: Unique id of the controller
+        :type id: str
         """
         try:
-            self.controllers.pop(uid)
-            e = Event(uid, E_DISCONNECT)
+            self.controllers.pop(id)
+            e = pymlgame.Event(id, pymlgame.E_DISCONNECT)
             self.queue.put_nowait(e)
         except KeyError:
             # There is no such controller, ignore the command
             pass
 
-    def _ping(self, uid, addr, port):
+    def _ping(self, id: str, addr: str, port: int):
         """
         Just say hello so that pymlgame knows that your controller is still alive. Unused controllers will be deleted
         after a while. This function is also used to update the address and port of the controller if it has changed.
 
-        :param uid: Unique id of the controller
+        :param id: Unique id of the controller
         :param addr: Address of the controller
         :param port: Port that the controller listens on
-        :type uid: str
+        :type id: str
         :type addr: str
         :type port: int
         """
         try:
-            self.controllers[uid][0] = addr
-            self.controllers[uid][1] = port
-            self.controllers[uid][3] = time.time()
+            self.controllers[id]['addr'] = addr
+            self.controllers[id]['port'] = port
+            self.controllers[id]['last_update'] = datetime.now()
 
-            e = Event(uid, E_PING)
+            e = pymlgame.Event(id, pymlgame.E_PING)
             self.queue.put_nowait(e)
         except KeyError:
             # There is no such controller, ignore the command
             pass
 
-    def _update_states(self, uid, states):
+    def _update_states(self, id: str, states: str):
         """
         Got states of all buttons from a controller. Now check if something changed and create events if neccesary.
 
-        :param uid: Unique id of the controller
+        :param id: Unique id of the controller
         :param states: Buttons states
-        :type uid: str
+        :type id: str
         :type states: str
         """
-        #TODO: use try and catch all exceptions
-        # test if uid exists
-        if self.controllers[uid]:
+        # test if id exists
+        if self.controllers[id]:
             # test if states have correct lenght
             if len(states) == 14:
-                old_states = self.controllers[uid][2]
+                old_states = self.controllers[id]['states']
                 if old_states != states:
                     for key in range(14):
                         if int(old_states[key]) > int(states[key]):
-                            e = Event(uid, E_KEYUP, key)
+                            e = pymlgame.Event(id, pymlgame.E_KEYUP, key)
                             self.queue.put_nowait(e)
                         elif int(old_states[key]) < int(states[key]):
-                            e = Event(uid, E_KEYDOWN, key)
+                            e = pymlgame.Event(id, pymlgame.E_KEYDOWN, key)
                             self.queue.put_nowait(e)
-                self.controllers[uid][2] = states
-            self.controllers[uid][3] = time.time()
+                self.controllers[id]['states'] = states
+            self.controllers[id]['last_update'] = datetime.now()
 
-    def _got_message(self, uid, text):
+    def _got_message(self, id: str, text):
         """
         The controller has send us a message.
 
-        :param uid: Unique id of the controller
+        :param id: Unique id of the controller
         :param text: Text to display
-        :type uid: str
+        :type id: str
         :type text: str
         """
-        #TODO: use try
-        e = Event(uid, E_MESSAGE, text)
+        e = pymlgame.Event(id, pymlgame.E_MESSAGE, text)
         self.queue.put_nowait(e)
 
-        self.controllers[uid][2] = time.time()
+        self.controllers[id]['last_update'] = datetime.now()
 
-    def send(self, uid, event, payload=None):
+    def send(self, id: str, event: int, payload: str = None):
         """
         Send an event to a connected controller. Use pymlgame event type and correct payload.
         To send a message to the controller use pymlgame.E_MESSAGE event and a string as payload.
 
-        :param uid: Unique id of the controller
+        :param id: Unique id of the controller
         :param event: Event type
         :param payload: Payload of the event
-        :type uid: str
+        :type id: str
         :type event: Event
         :type payload: str
         :return: Number of bytes send or False
         :rtype: int
         """
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        if uid in self.controllers.keys():
-            addr = self.controllers[uid][0]
-            port = self.controllers[uid][1]
-            if event == E_MESSAGE:
+        if id in self.controllers.keys():
+            addr = self.controllers[id]['addr']
+            port = self.controllers[id]['port']
+            if event == pymlgame.E_MESSAGE:
                 #print('/message/{} => {}:{}'.format(payload, addr, port))
-                return sock.sendto('/message/{}'.format(payload).encode('utf-8'), (addr, port))
-            elif event == E_RUMBLE:
+                return sock.sendto(('/message/%s' % payload).encode('utf-8'), (addr, port))
+            elif event == pymlgame.E_RUMBLE:
                 #print('/rumble/{} => {}:{}'.format(payload, addr, port))
-                return sock.sendto('/rumble/{}'.format(payload).encode('utf-8'), (addr, port))
-            else:
-                pass
-        else:
-            pass
+                return sock.sendto(('/rumble/%s ' % payload).encode('utf-8'), (addr, port))
+
         return False
 
     def run(self):
@@ -183,36 +176,33 @@ class Controller(Thread):
         Listen for controllers.
         """
         while True:
-            data, sender = self.sock.recvfrom(1024)
-            addr = sender[0]
-            msg = data.decode('utf-8')
-            if msg.startswith('/controller/'):
-                try:
-                    uid = msg.split('/')[2]
-                    if uid == 'new':
-                        port = int(msg.split('/')[3])
+            data, sender = self._sock.recvfrom(1024)
+            addr, _ = sender
+            try:
+                msg = data.decode('utf-8').split('/')
+                if msg[1] == 'controller':
+                    id = msg[2]
+                    if id == 'new':
+                        port = int(msg[3])
                         self._new_controller(addr, port)
                     else:
-                        cmd = msg.split('/')[3]
+                        cmd = msg[3]
                         if cmd == 'ping':
-                            port = msg.split('/')[3]
-                            self._ping(uid, addr, port)
+                            port = msg[4]
+                            self._ping(id, addr, port)
                         elif cmd == 'kthxbye':
-                            self._del_controller(uid)
+                            self._del_controller(id)
                         elif cmd == 'states':
-                            states = msg.split('/')[4]
-                            self._update_states(uid, states)
+                            states = msg[4]
+                            self._update_states(id, states)
                         elif cmd == 'text':
                             # /controller/<uid>/text/<text>
-                            text = msg[12 + len(uid) + 6:]
-                            self._got_message(uid, text)
-                except IndexError or KeyError:
-                    pass
-            else:
+                            text = '/'.join(msg[4:])
+                            self._got_message(id, text)
+            except IndexError or KeyError:
                 pass
 
             # find unused controllers and delete them
-            ctlrs = self.controllers.items()
-            for uid, state in ctlrs:
-                if state[3] < time.time() - 60:
-                    self.controllers.pop(uid)
+            for id, state in self.controllers.items():
+                if state['last_update'] < datetime.now() - timedelta(seconds=60):
+                    self.controllers.pop(id)

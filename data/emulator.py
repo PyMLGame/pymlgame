@@ -1,11 +1,10 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 """
 pymlgame - Mate Light emulator
 ==============================
 
-This little program emulates the awesome Mate Light, just in case you're not on c-base space station but want to send
+This little program emulates the awesome Mate Light, just in case you're not at c-base space station but want to send
 something to it.
 
 Usage:
@@ -23,15 +22,6 @@ Options:
   --dot=<px>     Size of dots in pixels [default: 10].
 """
 
-__author__ = 'Ricardo Band'
-__copyright__ = 'Ricardo Band'
-__credits__ = ['Ricardo Band']
-__license__ = 'MIT'
-__version__ = '0.3.1'
-__maintainer__ = 'Ricardo Band'
-__email__ = 'email@ricardo.band'
-__status__ = 'Development'
-
 import sys
 import socket
 
@@ -39,28 +29,31 @@ import pygame
 from docopt import docopt
 
 
-class Emu(object):
-    """
-    The Emulator is a simple pygame game.
-    """
-    def __init__(self, width=40, height=16, ip='127.0.0.1', port=1337, dotsize=10):
+class Emulator:
+    def __init__(self, width: int = 40, height: int = 16, host: str = '127.0.0.1', port: int = 1337, dotsize: int = 10):
         """
         Creates a screen with the given size, generates the matrix for the Mate bottles and binds the socket for
         incoming frames.
+        
+        :param width: Screen width in pixels (bottles) [default: 40].
+        :param height: Screen height in pixels (bottles) [default: 16].
+        :param host: Bind screen to this hostname/IP [default: 127.0.0.1].
+        :param port: Bind screen to this port [default: 1337].
+        :param dotsize: Size in pixels for one dot (bottle) [default: 10].
         """
         self.width = width
         self.height = height
         self.dotsize = dotsize
         pygame.init()
         self.screen = pygame.display.set_mode([self.width * self.dotsize, self.height * self.dotsize])
-        pygame.display.set_caption("Mate Light Emu")
+        pygame.display.set_caption("Mate Light Emulator")
         self.clock = pygame.time.Clock()
         self.matrix = []
-        for c in range(self.width * self.height * 3):
+        for _ in range(self.width * self.height * 3):
             self.matrix.append(0)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.bind((ip, port))
+        self.sock.bind((host, port))
         # size is width * height * 3 (rgb) + 4 (checksum)
         self.packetsize = self.width * self.height * 3 + 4
 
@@ -81,7 +74,7 @@ class Emu(object):
         for x in range(self.width):
             for y in range(self.height):
                 pixel = y * self.width * 3 + x * 3
-                #TODO: sometimes the matrix is not as big as it should
+                # TODO: sometimes the matrix is not as big as it should
                 if pixel < pixels:
                     pygame.draw.circle(self.screen,
                                        (self.matrix[pixel], self.matrix[pixel + 1], self.matrix[pixel + 2]),
@@ -115,6 +108,6 @@ class Emu(object):
 
 
 if __name__ == '__main__':
-    ARGS = docopt(__doc__, version=__version__)
-    EMU = Emu(int(ARGS['-w']), int(ARGS['-h']), ARGS['--host'], int(ARGS['--port']), int(ARGS['--dot']))
+    ARGS = docopt(__doc__, version='1.0.0')
+    EMU = Emulator(int(ARGS['-w']), int(ARGS['-h']), ARGS['--host'], int(ARGS['--port']), int(ARGS['--dot']))
     EMU.gameloop()

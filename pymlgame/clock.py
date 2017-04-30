@@ -1,17 +1,13 @@
-# -*- coding: utf-8 -*-
-
-"""
-PyMLGame - Clock
-"""
-
 import time
+from typing import Callable
+from datetime import datetime, timedelta
 
 
-class Clock(object):
+class Clock:
     """
     Measure the time to adjust drawing rates.
     """
-    def __init__(self, fps):
+    def __init__(self, fps: int):
         """
         Get a fresh Clock which ticks n times per second.
 
@@ -19,10 +15,28 @@ class Clock(object):
         :type fps: int
         """
         self.fps = fps
+        self.last_tick = datetime.now()
 
     def tick(self):
         """
         Let the Clock tick.
         """
-        #TODO: I think this is not the correct way. I should think about this again..
-        time.sleep(1.0 / self.fps)
+        wait = timedelta(seconds=1) / self.fps - (datetime.now() - self.last_tick)
+        if wait > 0:
+            time.sleep(wait)
+        self.last_tick = datetime.now()
+
+    @staticmethod
+    def timer(timeout: float, callback: Callable, *args):
+        """
+        Call function after timeout.
+        
+        :param timeout: Time to wait in seconds. 
+        :param callback: function to call after timeout.
+        :param args: Arguments for callback.
+        :type timeout: float
+        :type callback: Callable
+        :return: 
+        """
+        time.sleep(timeout)
+        callback(*args)

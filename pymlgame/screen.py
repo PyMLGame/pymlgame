@@ -1,48 +1,48 @@
-# -*- coding: utf-8 -*-
-
-"""
-PyMLGame - Screen
-"""
-
 import socket
+from typing import List, Tuple
 
-from pymlgame.locals import BLACK
+from pymlgame import BLACK
 from pymlgame.surface import Surface
 
 
-class Screen(object):
-    """
-    Represents the Mate Light screen and has all the drawing methods.
-    """
-    def __init__(self, host='127.0.0.1', port=1337, width=40, height=16):
-        """
-        Create a screen with default size and fill it with black pixels.
-        """
-        self.host = host
-        self.port = port
-        self.width = width
-        self.height = height
+class Screen:
+    def __init__(self, host: str = '127.0.0.1', port: int = 1337, width: int = 40, height: int = 16):
+        self.host: str = host
+        self.port: int = port
+        self.width: int = width
+        self.height: int = height
 
-        self.matrix = None
+        self.matrix: List[List[Tuple[int, int, int]]]
+
         self.reset()
 
-    def reset(self):
+    def reset(self, color: Tuple[int, int, int] = BLACK):
         """
-        Fill the screen with black pixels
+        Resets the screen to the privided given color.
+        
+        :param color: The color to reset the screen [default (0, 0, 0).
+        :type color: tuple
+        :return: 
         """
-        surface = Surface(self.width, self.height)
-        surface.fill(BLACK)
-        self.matrix = surface.matrix
+        for x in range(self.width):
+            for y in range(self.height):
+                self.matrix[x][y] = color
 
     def update(self):
         """
-        Sends the current screen contents to Mate Light
+        Sends the current screen contents to the Mate Light.
+        
+        :return:
         """
-        display_data = []
+        display_data: List[int] = []
         for y in range(self.height):
             for x in range(self.width):
-                for color in self.matrix[x][y]:
-                    display_data.append(int(color))
+                # check for transparency, add black if transparent
+                if self.matrix[x][y]:
+                    for color in self.matrix[x][y]:
+                        display_data.append(color)
+                else:
+                    display_data.extend([0, 0, 0])
 
         checksum = bytearray([0, 0, 0, 0])
         data_as_bytes = bytearray(display_data)
@@ -50,31 +50,29 @@ class Screen(object):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(data, (self.host, self.port))
 
-    def blit(self, surface, pos=(0, 0)):
+    def point_on_screen(self, position: Tuple[int, int]) -> bool:
         """
-        Blits a surface on the screen at pos
+        Checks if the point is still on the screen.
 
-        :param surface: Surface to blit
-        :param pos: Top left corner to start blitting
-        :type surface: Surface
-        :type pos: tuple
-        """
-        for x in range(surface.width):
-            for y in range(surface.height):
-                point = (x + pos[0], y + pos[1])
-                if self.point_on_screen(point):
-                    self.matrix[point[0]][point[1]] = surface.matrix[x][y]
-
-    def point_on_screen(self, pos):
-        """
-        Is the point still on the screen?
-
-        :param pos: Point
-        :type pos: tuple
+        :param position: The point to check
+        :type position: tuple
         :return: Is it?
         :rtype: bool
         """
-        if 0 <= pos[0] < self.width and 0 <= pos[1] < self.height:
-            return True
-        else:
-            return False
+        return 0 <= position[0] < self.width and 0 <= position[1] < self.height
+
+    def blit(self, surface: Surface, position: Tuple[int, int] = (0, 0)):
+        """
+        Blits a surface on the screen at a specific position.
+
+        :param surface: Surface to blit.
+        :param position: Top left corner to start blitting [default: (0, 0)].
+        :type surface: Surface
+        :type position: tuple
+        """
+        for x in range(surface.width):
+            for y in range(surface.height):
+                if surface.matrix[x][y]:
+                    point = (x + position[0], y + position[1])
+                    if self.point_on_screen(point):
+                        self.matrix[point[0]][point[1]] = surface.matrix[x][y]

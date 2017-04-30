@@ -7,15 +7,6 @@ PyMLGame is an abstraction layer to easily build games for Mate Light inspired b
 
 You need 3 parts to actually have a running game on Mate Light.
 
-tl;dr
------
-
-```
-virtualenv env
-source env/bin/activate
-python setup.py install
-```
-
 The game
 --------
 
@@ -29,13 +20,13 @@ If you want players, your game needs a controller to have some inputs. Controlle
 Mate Light
 ----------
 
-To play PyMLGames you need the awesome Mate Light. You could use the one on [c-base space station][c-base], or build your own. If you're not near c-base and don't want to build your own, you can use the Mate Light emulator provided with PyMLGame.
+To play PyMLGames you need the awesome Mate Light. You could use the one at [c-base space station][c-base], or build your own. If you're not near c-base and don't want to build your own, you can use the Mate Light emulator provided with PyMLGame.
 
 
 Protocol
 ========
 
-This is the protocol that handles the communication between the game and the controllers. It's very similar to OSC, as it sends slash seperated srings over UDP.
+The protocol that handles the communication between the game and the controllers is very similar to OSC. It sends slash seperated strings over UDP.
 
 
 Controller -> Game
@@ -132,3 +123,4 @@ Have fun while playing PyMLGames on Mate Light! :smiley:
 [pymlctlr]: https://github.com/PyMLGame/pymlgame-controller
 [c-base]: https://c-base.org/
 [locals.py]: https://github.com/PyMLGame/pymlgame/blob/master/pymlgame/locals.py
+

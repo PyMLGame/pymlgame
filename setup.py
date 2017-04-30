@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-import os
-from distutils.core import setup
+from setuptools import setup, find_packages
+from codecs import open
+from os import path
 
 from pymlgame import __version__
 
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+def read(filename):
+    with open(path.join(path.abspath(path.dirname(__file__)), filename), encoding='utf-8') as fh:
+        return fh.read()
+
 
 setup(name='PyMLGame',
       version=__version__,
-      author='Ricardo Band',
-      author_email='email@ricardo.band',
-      maintainer='Ricardo Band',
-      maintainer_email='email@ricardo.band',
-      url='http://github.com/PyMLGame/pymlgame',
+
       description='PyMLGame is an abstraction layer to easily build games for Mate Light inspired by PyGame.',
       long_description=read('README.md'),
-      download_url='https://github.com/PyMLGame/pymlgame/archive/master.zip',
+
+      url='http://github.com/PyMLGame/pymlgame',
+
+      author='Ricardo Band',
+      author_email='email@ricardo.band',
+
+      license='MIT',
+
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'Intended Audience :: Developers',
@@ -27,7 +32,20 @@ setup(name='PyMLGame',
                    'Natural Language :: English',
                    'Operating System :: POSIX :: Linux',
                    'Programming Language :: Python :: 3',
+                   'Programming Language :: Python :: 3.3',
+                   'Programming Language :: Python :: 3.4',
+                   'Programming Language :: Python :: 3.5',
                    'Topic :: Games/Entertainment',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
-      platforms='any',
-      packages=['pymlgame'])
+
+      keywords='pygame matelight c-base mainhall',
+
+      packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+
+      #install_requires=[],
+
+      #extras_require={
+      #    'dev': ['check-manifest'],
+      #    'test': ['coverage'],
+      #},
+)
