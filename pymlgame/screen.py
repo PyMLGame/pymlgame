@@ -1,7 +1,7 @@
 import socket
 from typing import List, Tuple
 
-from pymlgame import BLACK
+from pymlgame.locals import BLACK
 from pymlgame.surface import Surface
 
 
@@ -24,9 +24,10 @@ class Screen:
         :type color: tuple
         :return: 
         """
-        for x in range(self.width):
-            for y in range(self.height):
-                self.matrix[x][y] = color
+        #for x in range(self.width):
+        #    for y in range(self.height):
+        #        self.matrix[x][y] = color
+        self.matrix = [[color for _ in range(self.height)] for _ in range(self.width)]
 
     def update(self):
         """

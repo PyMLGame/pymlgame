@@ -22,8 +22,8 @@ class Clock:
         Let the Clock tick.
         """
         wait = timedelta(seconds=1) / self.fps - (datetime.now() - self.last_tick)
-        if wait > 0:
-            time.sleep(wait)
+        if wait > timedelta(seconds=0):
+            time.sleep(wait.total_seconds())
         self.last_tick = datetime.now()
 
     @staticmethod

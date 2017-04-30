@@ -22,9 +22,10 @@ class Surface:
         :type color: tuple
         :return: 
         """
-        for x in range(self.width):
-            for y in range(self.height):
-                self.matrix[x][y] = color
+        #for x in range(self.width):
+        #    for y in range(self.height):
+        #        self.matrix[x][y] = color
+        self.matrix = [[color for _ in range(self.height)] for _ in range(self.width)]
 
     def draw_dot(self, position: Tuple[int, int], color: Tuple[int, int, int]):
         """
@@ -131,7 +132,7 @@ class Surface:
         for point in points:
             self.draw_dot(point, color)
 
-    def blit(self, surface: Surface, position: Tuple[int, int] = (0, 0)):
+    def blit(self, surface: 'Surface', position: Tuple[int, int] = (0, 0)):
         """
         Blits a surface on this surface at position
 

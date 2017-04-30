@@ -6,6 +6,7 @@ from threading import Thread
 from datetime import datetime, timedelta
 
 import pymlgame
+from pymlgame.locals import *
 
 
 class Controller(Thread):
@@ -62,7 +63,7 @@ class Controller(Thread):
         self._sock.sendto(('/id/%s' % id).encode('utf-8'), (addr, port))
 
         # create event for pymlgame
-        e = pymlgame.Event(id, pymlgame.E_NEWCTLR)
+        e = pymlgame.Event(id, E_NEWCTLR)
         self.queue.put_nowait(e)
 
         return id
@@ -76,7 +77,7 @@ class Controller(Thread):
         """
         try:
             self.controllers.pop(id)
-            e = pymlgame.Event(id, pymlgame.E_DISCONNECT)
+            e = pymlgame.Event(id, E_DISCONNECT)
             self.queue.put_nowait(e)
         except KeyError:
             # There is no such controller, ignore the command
@@ -99,7 +100,7 @@ class Controller(Thread):
             self.controllers[id]['port'] = port
             self.controllers[id]['last_update'] = datetime.now()
 
-            e = pymlgame.Event(id, pymlgame.E_PING)
+            e = pymlgame.Event(id, E_PING)
             self.queue.put_nowait(e)
         except KeyError:
             # There is no such controller, ignore the command
@@ -122,10 +123,10 @@ class Controller(Thread):
                 if old_states != states:
                     for key in range(14):
                         if int(old_states[key]) > int(states[key]):
-                            e = pymlgame.Event(id, pymlgame.E_KEYUP, key)
+                            e = pymlgame.Event(id, E_KEYUP, key)
                             self.queue.put_nowait(e)
                         elif int(old_states[key]) < int(states[key]):
-                            e = pymlgame.Event(id, pymlgame.E_KEYDOWN, key)
+                            e = pymlgame.Event(id, E_KEYDOWN, key)
                             self.queue.put_nowait(e)
                 self.controllers[id]['states'] = states
             self.controllers[id]['last_update'] = datetime.now()
@@ -139,7 +140,7 @@ class Controller(Thread):
         :type id: str
         :type text: str
         """
-        e = pymlgame.Event(id, pymlgame.E_MESSAGE, text)
+        e = pymlgame.Event(id, E_MESSAGE, text)
         self.queue.put_nowait(e)
 
         self.controllers[id]['last_update'] = datetime.now()
@@ -162,10 +163,10 @@ class Controller(Thread):
         if id in self.controllers.keys():
             addr = self.controllers[id]['addr']
             port = self.controllers[id]['port']
-            if event == pymlgame.E_MESSAGE:
+            if event == E_MESSAGE:
                 #print('/message/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto(('/message/%s' % payload).encode('utf-8'), (addr, port))
-            elif event == pymlgame.E_RUMBLE:
+            elif event == E_RUMBLE:
                 #print('/rumble/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto(('/rumble/%s ' % payload).encode('utf-8'), (addr, port))
 

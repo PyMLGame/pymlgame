@@ -30,16 +30,16 @@ from docopt import docopt
 
 
 class Emulator:
-    def __init__(self, width: int = 40, height: int = 16, host: str = '127.0.0.1', port: int = 1337, dotsize: int = 10):
+    def __init__(self, width: int = 40, height: int = 16, host: str = '127.0.0.1', port: int = 1337, dotsize: int = 16):
         """
         Creates a screen with the given size, generates the matrix for the Mate bottles and binds the socket for
         incoming frames.
-        
+
         :param width: Screen width in pixels (bottles) [default: 40].
         :param height: Screen height in pixels (bottles) [default: 16].
         :param host: Bind screen to this hostname/IP [default: 127.0.0.1].
         :param port: Bind screen to this port [default: 1337].
-        :param dotsize: Size in pixels for one dot (bottle) [default: 10].
+        :param dotsize: Size in pixels for one dot (bottle) [default: 16].
         """
         self.width = width
         self.height = height
@@ -62,7 +62,7 @@ class Emulator:
         Grab the next frame and put it on the matrix.
         """
         data, addr = self.sock.recvfrom(self.packetsize)
-        matrix = map(ord, data.strip())
+        matrix = data.strip()
         if len(matrix) == self.packetsize:
             self.matrix = matrix[:-4]
 
@@ -78,7 +78,8 @@ class Emulator:
                 if pixel < pixels:
                     pygame.draw.circle(self.screen,
                                        (self.matrix[pixel], self.matrix[pixel + 1], self.matrix[pixel + 2]),
-                                       (x * self.dotsize + self.dotsize / 2, y * self.dotsize + self.dotsize / 2), self.dotsize / 2, 0)
+                                       #(x * self.dotsize + self.dotsize / 2, y * self.dotsize + self.dotsize / 2), self.dotsize / 2, 0)
+                                       (x * self.dotsize + self.dotsize // 2, y * self.dotsize + self.dotsize // 2), self.dotsize // 2, 0)
 
     def render(self):
         """
