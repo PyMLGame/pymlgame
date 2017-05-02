@@ -76,4 +76,5 @@ class TestScreen:
         assert not obj.point_on_screen((-1, -1))
         assert not obj.point_on_screen((self.TEST_WIDTH, 0))
         assert not obj.point_on_screen((0, self.TEST_HEIGHT))
-        assert obj.point_on_screen((self.TEST_WIDTH, self.TEST_HEIGHT))
+        assert not obj.point_on_screen((self.TEST_WIDTH, self.TEST_HEIGHT))
+        assert obj.point_on_screen((self.TEST_WIDTH - 1, self.TEST_HEIGHT - 1))

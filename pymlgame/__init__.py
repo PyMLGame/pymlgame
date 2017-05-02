@@ -6,7 +6,7 @@ from pymlgame.screen import Screen
 from pymlgame.surface import Surface
 from pymlgame.event import Event
 from pymlgame.controller import Controller
-
+from pymlgame.locals import *
 
 __author__ = 'Ricardo Band'
 __copyright__ = 'Ricardo Band'
@@ -18,7 +18,7 @@ __email__ = 'email@ricardo.band'
 __status__ = 'Development'
 
 
-CONTROLLER_T = Controller()
+CONTROLLER_T = None
 
 def init(host: str = '0.0.0.0', port: int = 1338):
     """
@@ -30,6 +30,9 @@ def init(host: str = '0.0.0.0', port: int = 1338):
     :type port: int
     :return: 
     """
+    global CONTROLLER_T
+
+    CONTROLLER_T = Controller()
     CONTROLLER_T.host = host
     CONTROLLER_T.port = port
     CONTROLLER_T.setDaemon(True)  # because it's a deamon it will exit together with the main thread
@@ -45,6 +48,8 @@ def get_events(maximum: int = 10) -> List[Event]:
     :return: List of events
     :rtype: List[Event]
     """
+    global CONTROLLER_T
+
     events = []
     for ev in range(0, maximum):
         try:
@@ -64,7 +69,7 @@ def get_event() -> Event:
     :return: Next controller event
     :rtype: Event
     """
+    global CONTROLLER_T
+
     if not CONTROLLER_T.queue.empty():
         return CONTROLLER_T.queue.get_nowait()
-    else:
-        return None

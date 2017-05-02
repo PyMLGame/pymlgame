@@ -50,7 +50,6 @@ class Controller(Thread):
         for id, controller in self.controllers.items():
             if controller[0] == addr:
                 # duplicate address. sending the id again
-                #print('/id/{} => {}:{}'.format(id, addr, port))
                 self._sock.sendto(('/id/%s' % id).encode('utf-8'), (addr, port))
                 return None
 
@@ -59,7 +58,6 @@ class Controller(Thread):
         self.controllers[id] = {'addr': addr, 'port': port, 'states': '00000000000000', 'last_update': datetime.now()}
 
         # tell the controller about it
-        #print('/id/{} => {}:{}'.format(id, addr, port))
         self._sock.sendto(('/id/%s' % id).encode('utf-8'), (addr, port))
 
         # create event for pymlgame
@@ -164,10 +162,8 @@ class Controller(Thread):
             addr = self.controllers[id]['addr']
             port = self.controllers[id]['port']
             if event == E_MESSAGE:
-                #print('/message/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto(('/message/%s' % payload).encode('utf-8'), (addr, port))
             elif event == E_RUMBLE:
-                #print('/rumble/{} => {}:{}'.format(payload, addr, port))
                 return sock.sendto(('/rumble/%s ' % payload).encode('utf-8'), (addr, port))
 
         return False

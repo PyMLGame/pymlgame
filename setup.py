@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-from setuptools import setup, find_packages
-from codecs import open
+import sys
 from os import path
+from codecs import open
+from setuptools import setup, find_packages
 
 from pymlgame import __version__
 
@@ -41,6 +42,9 @@ setup(name='PyMLGame',
       keywords='pygame matelight c-base mainhall',
 
       packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+
+      #data_files=[(path.join(sys.prefix, 'share/pymlgame'),
+      #            ['controller_example.py', 'kbd.png', 'emulator.py', 'game_example.py'])],
 
       #install_requires=[],
 

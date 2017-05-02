@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 
 class Surface:
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int, fillcolor: Tuple[int, int, int] = None):
         self.logger = logging.getLogger('surface')
 
         self.width: int = width
@@ -12,7 +12,7 @@ class Surface:
 
         self.matrix: List[List[Tuple[int, int, int]]]
 
-        self.fill()
+        self.fill(fillcolor)
 
     def fill(self, color: Tuple[int, int, int] = None):
         """
@@ -69,6 +69,10 @@ class Surface:
                 d: float = dist((x, y), start, end)
                 if d < 0.5:
                     self.draw_dot((x, y), color)
+                elif d < 0.6:
+                    self.draw_dot((x, y), tuple(int(c / 2) for c in color))
+                elif d < 0.7:
+                    self.draw_dot((x, y), tuple(int(c / 4) for c in color))
                 # TODO: antialiasing
                 #elif d < 0.7:
                 #    self.draw_dot((x, y), color)

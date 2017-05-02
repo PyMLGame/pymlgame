@@ -19,6 +19,11 @@ class TestSurface:
         assert len(obj.matrix) == self.TEST_WIDTH
         assert len(obj.matrix[self.TEST_WIDTH - 1]) == self.TEST_HEIGHT
 
+        assert obj.matrix[0][0] == None
+        assert obj.matrix[self.TEST_WIDTH - 1][self.TEST_HEIGHT - 1] == None
+
+        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT, pymlgame.BLACK)
+
         assert obj.matrix[0][0] == pymlgame.BLACK
         assert obj.matrix[self.TEST_WIDTH - 1][self.TEST_HEIGHT - 1] == pymlgame.BLACK
 
@@ -35,7 +40,7 @@ class TestSurface:
             assert obj.matrix[random.randrange(0, self.TEST_WIDTH)][random.randrange(0, self.TEST_HEIGHT)] == pymlgame.BLUE
 
     def test_draw_dot(self):
-        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT)
+        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT, pymlgame.BLACK)
 
         # create 10 random dots
         randpoints = [(random.randrange(0, self.TEST_WIDTH), random.randrange(0, self.TEST_HEIGHT)) for _ in range(10)]
@@ -52,26 +57,24 @@ class TestSurface:
                     assert color == pymlgame.BLACK
 
     def test_draw_line(self):
-        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT)
+        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT, pymlgame.BLACK)
 
         obj.draw_line((1, 0), (self.TEST_WIDTH - 1, 0), pymlgame.GREY6)
         obj.draw_line((0, 1), (0, self.TEST_HEIGHT - 1), pymlgame.RED)
-        test_len = max(self.TEST_WIDTH, self.TEST_HEIGHT)
-        obj.draw_line((test_len - 2, test_len - 2), (2, 2), pymlgame.CYAN)
+        obj.draw_line((2, 2), (self.TEST_WIDTH - 1, self.TEST_HEIGHT - 1), pymlgame.CYAN)
 
-        for x in range(1, self.TEST_WIDTH):
-            assert obj.matrix[x][0] == pymlgame.GREY6
-            assert obj.matrix[x][1] == pymlgame.BLACK
-        for y in range(1, self.TEST_HEIGHT):
-            assert obj.matrix[0][y], pymlgame.RED
-            assert obj.matrix[1][y], pymlgame.BLACK
-        for z in range(2, test_len - 1):
-            assert obj.matrix[z][z] == pymlgame.CYAN
-            assert obj.matrix[z + 1][z] == pymlgame.BLACK
-            assert obj.matrix[z][z + 1] == pymlgame.BLACK
+        for x, y, c in [(0, 0, pymlgame.BLACK),
+                        (1, 0, pymlgame.GREY6),
+                        (0, 1, pymlgame.RED),
+                        (1, 1, pymlgame.CYAN),
+                        (0, int(self.TEST_HEIGHT / 2), pymlgame.RED),
+                        (int(self.TEST_WIDTH / 2), 0, pymlgame.GREY6),
+                        (2, 2, pymlgame.CYAN),
+                        (self.TEST_WIDTH - 1, self.TEST_HEIGHT - 1, pymlgame.CYAN)]:
+            assert obj.matrix[x][y] == c
 
     def test_draw_rect(self):
-        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT)
+        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT, pymlgame.BLACK)
 
         obj.draw_rect((1, 1), (self.TEST_WIDTH - 2, self.TEST_HEIGHT - 2), pymlgame.DARKYELLOW, None)
 
@@ -98,7 +101,7 @@ class TestSurface:
         obj.draw_circle(pos, radius, pymlgame.GREEN, None)
 
     def test_blit(self):
-        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT)
+        obj = pymlgame.Surface(self.TEST_WIDTH, self.TEST_HEIGHT, pymlgame.BLACK)
 
         surface = pymlgame.Surface(self.TEST_WIDTH - 2, self.TEST_HEIGHT - 2)
         surface.fill(pymlgame.WHITE)
