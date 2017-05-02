@@ -1,12 +1,12 @@
 import sys
 from typing import List
 
-from pymlgame.clock import Clock
-from pymlgame.screen import Screen
-from pymlgame.surface import Surface
-from pymlgame.event import Event
-from pymlgame.controller import Controller
-from pymlgame.locals import *
+from .clock import Clock
+from .screen import Screen
+from .surface import Surface
+from .event import Event
+from .controller import Controller
+from .locals import *
 
 __author__ = 'Ricardo Band'
 __copyright__ = 'Ricardo Band'
@@ -18,7 +18,7 @@ __email__ = 'email@ricardo.band'
 __status__ = 'Development'
 
 
-CONTROLLER_T = None
+CONTROLLER_T: object
 
 def init(host: str = '0.0.0.0', port: int = 1338):
     """
@@ -39,26 +39,24 @@ def init(host: str = '0.0.0.0', port: int = 1338):
     CONTROLLER_T.start()
 
 
-def get_events(maximum: int = 10) -> List[Event]:
+def get_events(max: int = 10) -> List[Event]:
     """
     Get all events since the last time you asked for them. You can define a maximum which is 10 by default.
 
-    :param maximum: Maximum number of events
-    :type maximum: int
+    :param max: Maximum number of events
+    :type max: int
     :return: List of events
     :rtype: List[Event]
     """
     global CONTROLLER_T
 
     events = []
-    for ev in range(0, maximum):
-        try:
-            if CONTROLLER_T.queue.empty():
-                break
-            else:
-                events.append(CONTROLLER_T.queue.get_nowait())
-        except NameError:
-            sys.exit('PyMLGame is not initialized correctly. Use pymlgame.init() first.')
+    for _ in range(0, max):
+        e = get_event()
+        if e:
+            events.append(e)
+        else:
+            break
     return events
 
 
@@ -71,5 +69,10 @@ def get_event() -> Event:
     """
     global CONTROLLER_T
 
-    if not CONTROLLER_T.queue.empty():
-        return CONTROLLER_T.queue.get_nowait()
+    try:
+        if not CONTROLLER_T.queue.empty():
+            return CONTROLLER_T.queue.get_nowait()
+        else:
+            return None
+    except NameError:
+        sys.exit('PyMLGame is not initialized correctly. Use pymlgame.init() first.')

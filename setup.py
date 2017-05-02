@@ -2,14 +2,13 @@
 
 import sys
 from os import path
-from codecs import open
 from setuptools import setup, find_packages
 
 from pymlgame import __version__
 
 
 def read(filename):
-    with open(path.join(path.abspath(path.dirname(__file__)), filename), encoding='utf-8') as fh:
+    with open(path.join(path.abspath(path.dirname(__file__)), filename), 'r') as fh:
         return fh.read()
 
 
@@ -33,9 +32,8 @@ setup(name='PyMLGame',
                    'Natural Language :: English',
                    'Operating System :: POSIX :: Linux',
                    'Programming Language :: Python :: 3',
-                   'Programming Language :: Python :: 3.3',
-                   'Programming Language :: Python :: 3.4',
                    'Programming Language :: Python :: 3.5',
+                   'Programming Language :: Python :: 3.6',
                    'Topic :: Games/Entertainment',
                    'Topic :: Software Development :: Libraries :: Python Modules'],
 

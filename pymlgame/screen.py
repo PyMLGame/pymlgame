@@ -1,8 +1,9 @@
 import socket
+from time import sleep
 from typing import List, Tuple
 
-from pymlgame.locals import BLACK
-from pymlgame.surface import Surface
+from .locals import BLACK
+from .surface import Surface
 
 
 class Screen:
@@ -77,3 +78,82 @@ class Screen:
                     point = (x + position[0], y + position[1])
                     if self.point_on_screen(point):
                         self.matrix[point[0]][point[1]] = surface.matrix[x][y]
+
+
+class IntroScreen(Screen):
+    def __init__(self, host: str = '127.0.0.1', port: int = 1337, width: int = 40, height: int = 16):
+        super().__init__(host, port, width, height)
+
+        _ = BLACK
+        G = (24, 208, 0)
+        O = (255, 158, 0)
+        B = (0, 24, 255)
+        g = (137, 149, 149)
+        b = (35, 35, 35)
+        W = (255, 255, 255)
+
+        s = Surface(width, height, BLACK)
+        s.matrix = [[_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, G, G, G, G, G, _, _, G, G, G, _, _, _],
+                    [_, _, _, G, _, G, _, _, _, G, _, _, _, G, _, _],
+                    [_, _, _, _, G, _, _, _, _, G, _, G, G, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, G, G, _, _, _, _, _, G, G, G, G, _, _],
+                    [_, _, _, _, _, G, G, G, _, G, _, _, G, _, _, _],
+                    [_, _, _, G, G, _, _, _, _, _, G, G, G, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, G, G, G, G, G, _, G, G, G, G, G, _, _],
+                    [_, _, _, _, G, _, _, _, _, _, G, _, _, _, _, _],
+                    [_, _, _, _, _, G, G, _, _, _, _, G, G, _, _, _],
+                    [_, _, _, _, G, _, _, _, _, _, G, _, _, _, _, _],
+                    [_, _, _, G, G, G, G, G, _, G, G, G, G, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, G, G, G, G, G, _, G, G, G, G, G, _, _],
+                    [_, _, _, _, _, _, _, G, _, G, _, G, _, G, _, _],
+                    [_, _, _, _, _, _, _, G, _, G, _, _, _, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, g, b, g, _, _, _, _, _, _, _, _],
+                    [_, _, _, G, G, b, b, b, _, _, _, _, _, _, _, _],
+                    [_, _, G, W, G, g, b, g, _, _, _, _, _, _, _, _],
+                    [_, _, G, G, G, g, g, g, G, _, _, _, _, _, _, _],
+                    [_, _, G, G, G, g, g, g, G, _, _, _, G, _, _, _],
+                    [_, _, G, W, G, g, b, g, _, _, _, G, G, G, _, _],
+                    [_, _, _, G, G, b, g, b, O, O, G, G, G, O, O, _],
+                    [_, _, _, G, O, g, b, g, O, B, G, G, O, O, O, _],
+                    [_, O, O, O, O, B, B, O, B, G, G, G, B, O, O, _],
+                    [_, O, O, O, O, B, B, O, B, G, G, B, B, O, O, _],
+                    [_, _, _, _, O, O, O, O, G, G, G, B, O, O, O, _],
+                    [_, _, _, _, _, G, G, O, G, G, O, O, O, O, O, _],
+                    [_, _, _, _, _, _, G, G, G, G, _, _, G, G, _, _],
+                    [_, _, _, _, _, _, _, G, G, _, _, _, G, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, G, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, G, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
+                    [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _]]
+        self.blit(s)
+        self.update()
+        sleep(1)
+        for _ in range(3):
+            if _ == 1:
+                s.matrix[22][3] = G
+                s.matrix[25][3] = G
+            s.matrix[36][13] = BLACK
+            s.matrix[37][13] = BLACK
+            s.matrix[36][12] = G
+            s.matrix[37][12] = G
+            self.blit(s)
+            self.update()
+            sleep(1)
+            s.matrix[22][3] = W
+            s.matrix[25][3] = W
+            s.matrix[36][13] = G
+            s.matrix[37][13] = G
+            s.matrix[36][12] = BLACK
+            s.matrix[37][12] = BLACK
+            self.blit(s)
+            self.update()
+            sleep(1)
+        self.reset()

@@ -27,7 +27,7 @@ class Clock:
         self.last_tick = datetime.now()
 
     @staticmethod
-    def timer(timeout: float, callback: Callable, *args, *kwargs):
+    def timer(timeout: float, callback: Callable, *args):
         """
         Call function after timeout.
         
@@ -39,4 +39,4 @@ class Clock:
         :return: 
         """
         time.sleep(timeout)
-        callback(*args, *kwargs)
+        callback(*args)
