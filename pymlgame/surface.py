@@ -41,7 +41,7 @@ class Surface:
         else:
             self.logger.debug('Trying to draw outside surface, position %d, %d' % position)
 
-    def draw_line(self, start: Tuple[int, int], end: Tuple[int, int], color: Tuple[int, int, int], antialias: bool = True):
+    def draw_line(self, start: Tuple[int, int], end: Tuple[int, int], color: Tuple[int, int, int], antialias: bool = False):
         """
         Draw a line with the given color on the surface.
 
@@ -64,9 +64,24 @@ class Surface:
             # TODO: wtf is this?!
             return abs((end[0] - start[0]) * (start[1] - point[1]) - (start[0] - point[0]) * (end[1] - start[1])) / math.sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2)
 
+        # for x in range(min(start[0], end[0]), max(start[0], end[0]) + 1):
+        #     for y in range(min(start[1], end[1]), max(start[1], end[1]) + 1):
+        #         d: float = dist((x, y), start, end)
+        #         if antialias:
+        #             if d < 0.4:
+        #                 self.draw_dot((x, y), color)
+        #             elif d < 0.5:
+        #                 self.draw_dot((x, y), tuple(int(c / 2) for c in color))
+        #             elif d < 0.6:
+        #                 self.draw_dot((x, y), tuple(int(c / 4) for c in color))
+        #         else:
+        #             if d < 0.5:
+        #                 self.draw_dot((x, y), color)
+
         for x in range(min(start[0], end[0]), max(start[0], end[0]) + 1):
+            last_top = 0
+            found = False
             for y in range(min(start[1], end[1]), max(start[1], end[1]) + 1):
-                d: float = dist((x, y), start, end)
                 if antialias:
                     if d < 0.4:
                         self.draw_dot((x, y), color)
@@ -75,8 +90,33 @@ class Surface:
                     elif d < 0.6:
                         self.draw_dot((x, y), tuple(int(c / 4) for c in color))
                 else:
+                    if y < last_top:
+                        continue
+                    d: float = dist((x, y), start, end)
                     if d < 0.5:
+                        if not found and y >= last_top:
+                            last_top = y
+                            found = True
                         self.draw_dot((x, y), color)
+                    else:
+                        if found:
+                            found = False
+                            break
+
+        # if antialias:
+        #     pass
+        # else:
+        #     # https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+        #     dx = end[0] - start[0]
+        #     dy = end[1] - start[1]
+        #     D = 2 * dy - dx
+        #     y = start[1]
+        #     for x in range(start[0], end[0]):
+        #         self.draw_dot((x, y), color)
+        #         if D > 0:
+        #             y = y + 1
+        #             D = D - 2 * dx
+        #         D = D + 2 * dy
 
     def draw_rect(self, position: Tuple[int, int], size: Tuple[int, int], color: Tuple[int, int, int], fillcolor: Tuple[int, int, int] = None):
         """

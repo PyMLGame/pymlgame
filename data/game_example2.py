@@ -6,12 +6,12 @@ import pymlgame
 class Game:
     def __init__(self):
         pymlgame.init(debug=True)
-        self.width = 200
-        self.height = 80
-        self.screen = pymlgame.IntroScreen('127.0.0.1', 1337, self.width, self.height)
+        self.width = 40
+        self.height = 16
+        self.screen = pymlgame.Screen('127.0.0.1', 1337, self.width, self.height)
         #self.screen = pymlgame.Screen('matelight.cbrp3.c-base.org', 1337, 40, 16)
         #self.screen = pymlgame.screen.IntroScreen('matelight.cbrp3.c-base.org', 1337, 40, 16)
-        self.clock = pymlgame.Clock(10)
+        self.clock = pymlgame.Clock(200)
         self.surface = pymlgame.Surface(self.width, self.height)
         self.a1 = (0, 0)
         self.a2 = (self.width - 1, self.height - 1)
