@@ -8,19 +8,22 @@ pymlgame - controller example
 This example shows how you can use your notebooks keyboard to connect to a pymlgame instance.
 """
 
+import os
 import sys
 import socket
 import logging
+from enum import IntEnum
 from threading import Thread
 from datetime import datetime, timedelta
 
 import pygame
 
 # define some constants
-E_ID = pygame.USEREVENT + 1
-E_DOWNLOAD = pygame.USEREVENT + 2
-E_PLAY = pygame.USEREVENT + 3
-E_RUMBLE = pygame.USEREVENT + 4
+class Event(IntEnum):
+    E_ID = pygame.USEREVENT + 1
+    E_DOWNLOAD = pygame.USEREVENT + 2
+    E_PLAY = pygame.USEREVENT + 3
+    E_RUMBLE = pygame.USEREVENT + 4
 
 
 class ReceiverThread(Thread):
@@ -49,21 +52,23 @@ class ReceiverThread(Thread):
                 param = data[2]
 
                 if command == 'id':
-                    e = pygame.event.Event(E_ID, {'id': param})
+                    e = pygame.event.Event(Event.E_ID, {'id': param})
                     pygame.event.post(e)
                     self._logger.info('id received: %s' % param)
                 elif command == 'download':
-                    e = pygame.event.Event(E_DOWNLOAD, {'url': param})
+                    e = pygame.event.Event(Event.E_DOWNLOAD, {'url': param})
                     pygame.event.post(e)
                     self._logger.info('download of %s triggered' % param)
                 elif command == 'play':
-                    e = pygame.event.Event(E_PLAY, {'filename': param})
+                    e = pygame.event.Event(Event.E_PLAY, {'filename': param})
                     pygame.event.post(e)
                     self._logger.info('playback of %s triggered' % param)
                 elif command == 'rumble':
-                    e = pygame.event.Event(E_RUMBLE, {'duration': int(param)})
+                    e = pygame.event.Event(Event.E_RUMBLE, {'duration': int(param)})
                     pygame.event.post(e)
                     self._logger.info('request rumble for %s ms' % param)
+                else:
+                    self._logger.info('unknown command received: %s' % data.decode('utf-8'))
             except IndexError:
                 self._logger.error('invalid command received: %s' % data.decode('utf-8'))
 
@@ -82,8 +87,8 @@ class Controller:
 
         pygame.init()
         self._screen = pygame.display.set_mode((128, 113), pygame.DOUBLEBUF, 32)
-        bg = pygame.image.load('kbd.png')
-        self._screen.blit(bg, pygame.rect.Rect(0, 0, 128, 113))
+        bg = pygame.image.load(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'kbd.png'))
+        self._screen.blit(bg, pygame.Rect(0, 0, 128, 113))
         pygame.display.flip()
 
         # create state array for buttons
@@ -115,19 +120,18 @@ class Controller:
     def ping(self):
         """
         Send a ping signla to the game so that it knows we are still active.
-        
-        :return: 
+
+        :return:
         """
-        if self.id:
-            self._logger.info('sending ping')
-            msg = '/controller/%s/ping/%s' % (self.id, self._receiver._port)
-            self._sock.sendto(msg.encode('utf-8'), (self._game_host, self._game_port))
+        self._logger.info('sending ping')
+        msg = '/controller/%s/ping/%s' % (self.id, self._receiver._port)
+        self._sock.sendto(msg.encode('utf-8'), (self._game_host, self._game_port))
 
     def send_keys(self):
         """
         Send current key states to the game.
-        
-        :return: 
+
+        :return:
         """
         # alternative states creation: [1 if k else 0 for k in self.keys]
         states = '/controller/%s/states/%s' % (self.id, ''.join([str(k) for k in self._keys]))
@@ -138,17 +142,17 @@ class Controller:
     def send_message(self, msg: str):
         """
         Send message to the game.
-        
+
         :param msg: The message to send.
-        :return: 
+        :return:
         """
         self._logger.info('sending of messages not yet implemented')
 
     def disconnect(self):
         """
         Disconnect from the game.
-        
-        :return: 
+
+        :return:
         """
         self._logger.info('disconnecting from game')
         msg = '/controller/%s/kthxbye' % self.id
@@ -157,68 +161,68 @@ class Controller:
     def connect(self):
         """
         Connect to game intance.
-        
-        :return: 
+
+        :return:
         """
         self._logger.info('connecting to game')
-        msg = '/controller/new/{}'.format(self._port)
+        msg = '/controller/new/%d' % self._port
         self._sock.sendto(msg.encode('utf-8'), (self._game_host, self._game_port))
 
     def rumble(self, duration: int):
         """
         The controller should vibrate a the given time.
-        
-        :param duration: Time in milliseconds.
+
+        :param Duration: Time in milliseconds.
         :type duration: int
-        :return: 
+        :return:
         """
         self._logger.warning('rumble not yet implemented')
 
     def download_sound(self, url: str):
         """
         Download sound file to controller. Typically done when the game starts.
-        
+
         :param url: File to download.
         :type url: str
-        :return: 
+        :return:
         """
         self._logger.warning('downloading of media files not yet implemented')
 
     def play_sound(self, filename: str):
         """
         Play downloaded file.
-        
-        :param filename: Filename to play. 
+
+        :param filename: Filename to play.
         :type filename: str
-        :return: 
+        :return:
         """
         self._logger.warning('playing media files not yet implemented')
 
     def handle_inputs(self):
         """
         Get all events and process them.
-        
-        :return: 
-        """
-        if self._timeout < datetime.now() + timedelta(seconds=30):
-            self.ping()
-            self._timeout = datetime.now() + timedelta(seconds=30)
 
+        :return:
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit(0)
             elif event.type == pygame.MOUSEBUTTONUP:
                 pygame.event.post(pygame.event.Event(pygame.QUIT))
-            elif event.type == E_ID:
+            elif event.type == Event.E_ID:
                 self.id = event.id
 
-            if self.id is not None:
-                if event.type == E_DOWNLOAD:
+            if self.id:
+                if self._timeout < datetime.now():
+                    self.ping()
+                    self._timeout = datetime.now() + timedelta(seconds=30)
+
+                if event.type == Event.E_DOWNLOAD:
                     self.download_sound(event.url)
-                elif event.type == E_PLAY:
+                elif event.type == Event.E_PLAY:
                     self.play_sound(event.filename)
-                elif event.type == E_RUMBLE:
+                elif event.type == Event.E_RUMBLE:
                     self.rumble(event.duration)
                 elif event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
                     try:
@@ -243,7 +247,7 @@ if __name__ == '__main__':
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    ctlr = Controller('127.0.0.1', 1338, '127.0.0.1', 1339)
+    ctlr = Controller('127.0.0.1', 1337, '127.0.0.1', 1338)
     try:
         while True:
             ctlr.handle_inputs()

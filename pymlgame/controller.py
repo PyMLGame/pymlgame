@@ -5,8 +5,8 @@ from queue import Queue
 from threading import Thread
 from datetime import datetime, timedelta
 
-from .event import Event
-from .locals import *
+from .clock import Clock
+from .event import Event, EventType
 
 
 class Controller(Thread):
@@ -35,6 +35,7 @@ class Controller(Thread):
         self.queue = Queue()
         # list of connected controllers
         self.controllers = {}
+        self.logger.debug('new controller receiver')
 
     def _new_controller(self, addr: str, port: int) -> uuid.UUID:
         """
@@ -61,8 +62,7 @@ class Controller(Thread):
         self._sock.sendto(('/id/%s' % id).encode('utf-8'), (addr, port))
 
         # create event for pymlgame
-        e = Event(id, E_NEWCTLR)
-        self.queue.put_nowait(e)
+        self.queue.put_nowait(Event(id=id, type=EventType.E_NEWCTLR))
 
         return id
 
@@ -75,7 +75,7 @@ class Controller(Thread):
         """
         try:
             self.controllers.pop(id)
-            e = Event(id, E_DISCONNECT)
+            e = Event(id=id, type=EventType.E_DISCONNECT)
             self.queue.put_nowait(e)
         except KeyError:
             # There is no such controller, ignore the command
@@ -98,8 +98,7 @@ class Controller(Thread):
             self.controllers[id]['port'] = port
             self.controllers[id]['last_update'] = datetime.now()
 
-            e = Event(id, E_PING)
-            self.queue.put_nowait(e)
+            self.queue.put_nowait(Event(id=id, type=EventType.E_PING))
         except KeyError:
             # There is no such controller, ignore the command
             pass
@@ -121,11 +120,9 @@ class Controller(Thread):
                 if old_states != states:
                     for key in range(14):
                         if int(old_states[key]) > int(states[key]):
-                            e = Event(id, E_KEYUP, key)
-                            self.queue.put_nowait(e)
+                            self.queue.put_nowait(Event(id=id, type=EventType.E_KEYUP, data=key))
                         elif int(old_states[key]) < int(states[key]):
-                            e = Event(id, E_KEYDOWN, key)
-                            self.queue.put_nowait(e)
+                            self.queue.put_nowait(Event(id=id, type=EventType.E_KEYDOWN, data=key))
                 self.controllers[id]['states'] = states
             self.controllers[id]['last_update'] = datetime.now()
 
@@ -138,8 +135,7 @@ class Controller(Thread):
         :type id: str
         :type text: str
         """
-        e = Event(id, E_MESSAGE, text)
-        self.queue.put_nowait(e)
+        self.queue.put_nowait(Event(id=id, type=EventType.E_MESSAGE, data=text))
 
         self.controllers[id]['last_update'] = datetime.now()
 
@@ -159,12 +155,12 @@ class Controller(Thread):
         """
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         if id in self.controllers.keys():
-            addr = self.controllers[id]['addr']
-            port = self.controllers[id]['port']
-            if event == E_MESSAGE:
-                return sock.sendto(('/message/%s' % payload).encode('utf-8'), (addr, port))
-            elif event == E_RUMBLE:
-                return sock.sendto(('/rumble/%s ' % payload).encode('utf-8'), (addr, port))
+            if event == EventType.E_MESSAGE:
+                return sock.sendto(('/message/%s' % payload).encode('utf-8'),
+                                   (self.controllers[id]['addr'], self.controllers[id]['port']))
+            elif event == EventType.E_RUMBLE:
+                return sock.sendto(('/rumble/%s ' % payload).encode('utf-8'),
+                                   (self.controllers[id]['addr'], self.controllers[id]['port']))
 
         return False
 
@@ -180,13 +176,16 @@ class Controller(Thread):
                 if msg[1] == 'controller':
                     id = msg[2]
                     if id == 'new':
+                        self.logger.debug('new controller: %s' % '/'.join(msg))
                         port = int(msg[3])
                         self._new_controller(addr, port)
                     else:
                         cmd = msg[3]
                         if cmd == 'ping':
                             port = msg[4]
-                            self._ping(id, addr, port)
+                            self.logger.debug('ping from controller %s: %s:%s' % (id, addr, port))
+                            # got ping , answer in 10 seconds
+                            Clock.timer(10, self._ping, id, addr, port)
                         elif cmd == 'kthxbye':
                             self._del_controller(id)
                         elif cmd == 'states':

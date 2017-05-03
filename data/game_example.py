@@ -103,19 +103,19 @@ class Game:
         Loop through all events.
         """
         for event in pymlgame.get_events():
-            if event.type == pymlgame.E_NEWCTLR:
+            if event.type == pymlgame.EventType.E_NEWCTLR:
                 print('### new player %s connected' % event.id)
                 self.players[event.id] = {'name': event.id.hex, 'score': 0}
-            elif event.type == pymlgame.E_DISCONNECT:
+            elif event.type == pymlgame.EventType.E_DISCONNECT:
                 print('### player %s disconnected' % event.id)
                 self.players.pop(event.id)
-            elif event.type == pymlgame.E_KEYDOWN:
+            elif event.type == pymlgame.EventType.E_KEYDOWN:
                 print('### %s pressed %s' % (self.players[event.id]['name'], event.data))
                 self.colors.append(self.colors.pop(0))
-            elif event.type == pymlgame.E_KEYUP:
+            elif event.type == pymlgame.EventType.E_KEYUP:
                 print( '### %s released %s' % (self.players[event.id]['name'], event.data))
                 self.colors.append(self.colors.pop(0))
-            elif event.type == pymlgame.E_PING:
+            elif event.type == pymlgame.EventType.E_PING:
                 print('### ping from %s' % self.players[event.id]['name'])
 
     def gameloop(self):

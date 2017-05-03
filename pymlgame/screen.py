@@ -92,7 +92,7 @@ class IntroScreen(Screen):
         b = (35, 35, 35)
         W = (255, 255, 255)
 
-        s = Surface(width, height, BLACK)
+        s = Surface(40, 16, BLACK)
         s.matrix = [[_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
                     [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
                     [_, _, _, G, G, G, G, G, _, _, G, G, G, _, _, _],
@@ -133,7 +133,7 @@ class IntroScreen(Screen):
                     [_, _, _, _, _, _, _, _, _, _, _, _, _, G, _, _],
                     [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _],
                     [_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _]]
-        self.blit(s)
+        self.blit(s, (int(width / 2) - 20, int(height / 2) - 8))
         self.update()
         sleep(1)
         for _ in range(3):
@@ -144,7 +144,7 @@ class IntroScreen(Screen):
             s.matrix[37][13] = BLACK
             s.matrix[36][12] = G
             s.matrix[37][12] = G
-            self.blit(s)
+            self.blit(s, (int(width / 2) - 20, int(height / 2) - 8))
             self.update()
             sleep(1)
             s.matrix[22][3] = W
@@ -153,7 +153,7 @@ class IntroScreen(Screen):
             s.matrix[37][13] = G
             s.matrix[36][12] = BLACK
             s.matrix[37][12] = BLACK
-            self.blit(s)
+            self.blit(s, (int(width / 2) - 20, int(height / 2) - 8))
             self.update()
             sleep(1)
         self.reset()

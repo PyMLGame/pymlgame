@@ -8,15 +8,15 @@ This little program emulates the awesome Mate Light, just in case you're not at 
 something to it.
 
 Usage:
-  emulator.py [-w=<px>] [-h=<px>] [--host=<ip>] [--port=<num>] [--dot=<size>]
+  emulator.py [--width=<px>] [--height=<px>] [--host=<ip>] [--port=<num>] [--dot=<size>]
   emulator.py --help
   emulator.py --version
 
 Options:
   --help         Show this screen.
   --version      Show version.
-  -w=<px>        Width in pixels [default: 40].
-  -h=<px>        Height in pixels [default: 16].
+  --width=<px>   Width in pixels [default: 40].
+  --height=<px>  Height in pixels [default: 16].
   --host=<host>  Bind to IP address [default: 127.0.0.1].
   --port=<port>  Bind to Port [default: 1337].
   --dot=<px>     Size of dots in pixels [default: 10].
@@ -110,5 +110,5 @@ class Emulator:
 
 if __name__ == '__main__':
     ARGS = docopt(__doc__, version='1.0.0')
-    EMU = Emulator(int(ARGS['-w']), int(ARGS['-h']), ARGS['--host'], int(ARGS['--port']), int(ARGS['--dot']))
+    EMU = Emulator(int(ARGS['--width']), int(ARGS['--height']), ARGS['--host'], int(ARGS['--port']), int(ARGS['--dot']))
     EMU.gameloop()

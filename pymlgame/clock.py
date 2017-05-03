@@ -1,4 +1,5 @@
 import time
+import logging
 from typing import Callable
 from datetime import datetime, timedelta
 
@@ -14,8 +15,10 @@ class Clock:
         :param fps: Target frames per second
         :type fps: int
         """
+        self.logger = logging.getLogger('clock')
         self.fps = fps
         self.last_tick = datetime.now()
+        self.logger.debug('init clock')
 
     def tick(self):
         """
@@ -25,6 +28,7 @@ class Clock:
         if wait > timedelta(seconds=0):
             time.sleep(wait.total_seconds())
         self.last_tick = datetime.now()
+        self.logger.debug('tick')
 
     @staticmethod
     def timer(timeout: float, callback: Callable, *args):

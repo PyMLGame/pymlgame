@@ -1,10 +1,11 @@
 import sys
+import logging
 from typing import List
 
 from .clock import Clock
-from .screen import Screen
+from .screen import Screen, IntroScreen
 from .surface import Surface
-from .event import Event
+from .event import Event, EventType
 from .controller import Controller
 from .locals import *
 
@@ -19,8 +20,9 @@ __status__ = 'Development'
 
 
 CONTROLLER_T: object
+LOGGER: object
 
-def init(host: str = '0.0.0.0', port: int = 1338):
+def init(host: str = '0.0.0.0', port: int = 1338, debug: bool = False):
     """
     Initialize pymlgame and the controller thread.
 
@@ -31,6 +33,17 @@ def init(host: str = '0.0.0.0', port: int = 1338):
     :return: 
     """
     global CONTROLLER_T
+    global LOGGER
+
+    if debug:
+        LOGGER = logging.getLogger('main')
+        LOGGER.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        LOGGER.addHandler(ch)
+        LOGGER.debug('DEBUG MODE enabled')
 
     CONTROLLER_T = Controller()
     CONTROLLER_T.host = host
@@ -68,10 +81,14 @@ def get_event() -> Event:
     :rtype: Event
     """
     global CONTROLLER_T
+    global LOGGER
 
     try:
         if not CONTROLLER_T.queue.empty():
-            return CONTROLLER_T.queue.get_nowait()
+            ev = CONTROLLER_T.queue.get_nowait()
+            if LOGGER:
+                LOGGER.debug('new event: %s %s %s' % (ev.id, ev.type, ev.data))
+            return ev
         else:
             return None
     except NameError:

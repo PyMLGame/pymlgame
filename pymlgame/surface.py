@@ -41,7 +41,7 @@ class Surface:
         else:
             self.logger.debug('Trying to draw outside surface, position %d, %d' % position)
 
-    def draw_line(self, start, end, color):
+    def draw_line(self, start: Tuple[int, int], end: Tuple[int, int], color: Tuple[int, int, int], antialias: bool = True):
         """
         Draw a line with the given color on the surface.
 
@@ -67,15 +67,16 @@ class Surface:
         for x in range(min(start[0], end[0]), max(start[0], end[0]) + 1):
             for y in range(min(start[1], end[1]), max(start[1], end[1]) + 1):
                 d: float = dist((x, y), start, end)
-                if d < 0.5:
-                    self.draw_dot((x, y), color)
-                elif d < 0.6:
-                    self.draw_dot((x, y), tuple(int(c / 2) for c in color))
-                elif d < 0.7:
-                    self.draw_dot((x, y), tuple(int(c / 4) for c in color))
-                # TODO: antialiasing
-                #elif d < 0.7:
-                #    self.draw_dot((x, y), color)
+                if antialias:
+                    if d < 0.4:
+                        self.draw_dot((x, y), color)
+                    elif d < 0.5:
+                        self.draw_dot((x, y), tuple(int(c / 2) for c in color))
+                    elif d < 0.6:
+                        self.draw_dot((x, y), tuple(int(c / 4) for c in color))
+                else:
+                    if d < 0.5:
+                        self.draw_dot((x, y), color)
 
     def draw_rect(self, position: Tuple[int, int], size: Tuple[int, int], color: Tuple[int, int, int], fillcolor: Tuple[int, int, int] = None):
         """
