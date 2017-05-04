@@ -58,9 +58,11 @@ class Surface:
         :param start: Start point of the line
         :param end: End point of the line
         :param color: Color of the line
+        :param antialias: Enable antialiasing
         :type start: tuple
         :type end: tuple
         :type color: tuple
+        :type antialias: bool
         """
         def dist(point: Tuple[int, int], start: Tuple[int, int], end: Tuple[int, int]) -> float:
             """
