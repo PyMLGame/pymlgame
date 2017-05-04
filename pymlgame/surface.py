@@ -27,7 +27,7 @@ class Surface:
         #        self.matrix[x][y] = color
         self.matrix = [[color for _ in range(self.height)] for _ in range(self.width)]
 
-    def draw_dot(self, position: Tuple[int, int], color: Tuple[int, int, int]):
+    def draw_dot(self, position: Tuple[int, int], color: Tuple[int, int, int], alpha: float = 1.0):
         """
         Draw one single dot with the given color on the surface.
 
@@ -36,8 +36,18 @@ class Surface:
         :type position: tuple
         :type color: tuple
         """
+        if alpha < 0:
+            alpha = 0
+        elif alpha > 1:
+            alpha = 1
         if 0 <= position[0] < self.width and 0 <= position[1] < self.height:
-            self.matrix[position[0]][position[1]] = color
+            if alpha < 1 and self.matrix[position[0]][position[1]]:
+                # self.matrix[position[0]][position[1]] = tuple(int((self.matrix[position[0]][position[1]][c] + color[c] * alpha) / 2) for c in color)
+                self.matrix[position[0]][position[1]] = (int((self.matrix[position[0]][position[1]][0] + color[0] * alpha) / 2),
+                                                         int((self.matrix[position[0]][position[1]][1] + color[1] * alpha) / 2),
+                                                         int((self.matrix[position[0]][position[1]][2] + color[2] * alpha) / 2))
+            else:
+                self.matrix[position[0]][position[1]] = color
         else:
             self.logger.debug('Trying to draw outside surface, position %d, %d' % position)
 
@@ -64,59 +74,80 @@ class Surface:
             # TODO: wtf is this?!
             return abs((end[0] - start[0]) * (start[1] - point[1]) - (start[0] - point[0]) * (end[1] - start[1])) / math.sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2)
 
+        # variant 1:
+
         # for x in range(min(start[0], end[0]), max(start[0], end[0]) + 1):
+        #     last_top = 0
+        #     found = False
         #     for y in range(min(start[1], end[1]), max(start[1], end[1]) + 1):
+        #         if y < last_top:
+        #             continue
         #         d: float = dist((x, y), start, end)
-        #         if antialias:
-        #             if d < 0.4:
+        #         if d < 0.4 and antialias:
+        #             if not found and y >= last_top:
+        #                 last_top = y
+        #                 found = True
+        #             self.draw_dot((x, y), color)
+        #         elif d < 0.5:
+        #             if not found and y >= last_top:
+        #                 last_top = y
+        #                 found = True
+        #             if antialias:
+        #                 # self.draw_dot((x, y), tuple(int(c / 2) for c in color))
+        #                 self.draw_dot((x, y), color, 0.5)
+        #             else:
         #                 self.draw_dot((x, y), color)
-        #             elif d < 0.5:
-        #                 self.draw_dot((x, y), tuple(int(c / 2) for c in color))
-        #             elif d < 0.6:
-        #                 self.draw_dot((x, y), tuple(int(c / 4) for c in color))
+        #         elif d < 0.6 and antialias:
+        #             # self.draw_dot((x, y), tuple(int(c / 4) for c in color))
+        #             self.draw_dot((x, y), color, 0.3)
+        #             if not found and y >= last_top:
+        #                 last_top = y
+        #                 found = True
         #         else:
-        #             if d < 0.5:
-        #                 self.draw_dot((x, y), color)
+        #             if found:
+        #                 found = False
+        #                 break
 
-        for x in range(min(start[0], end[0]), max(start[0], end[0]) + 1):
-            last_top = 0
-            found = False
-            for y in range(min(start[1], end[1]), max(start[1], end[1]) + 1):
-                if antialias:
-                    if d < 0.4:
-                        self.draw_dot((x, y), color)
-                    elif d < 0.5:
-                        self.draw_dot((x, y), tuple(int(c / 2) for c in color))
-                    elif d < 0.6:
-                        self.draw_dot((x, y), tuple(int(c / 4) for c in color))
-                else:
-                    if y < last_top:
-                        continue
-                    d: float = dist((x, y), start, end)
-                    if d < 0.5:
-                        if not found and y >= last_top:
-                            last_top = y
-                            found = True
-                        self.draw_dot((x, y), color)
-                    else:
-                        if found:
-                            found = False
-                            break
+        # variant 2:
 
-        # if antialias:
-        #     pass
-        # else:
-        #     # https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
-        #     dx = end[0] - start[0]
-        #     dy = end[1] - start[1]
-        #     D = 2 * dy - dx
-        #     y = start[1]
-        #     for x in range(start[0], end[0]):
-        #         self.draw_dot((x, y), color)
-        #         if D > 0:
-        #             y = y + 1
-        #             D = D - 2 * dx
-        #         D = D + 2 * dy
+        x1, y1 = start
+        x2, y2 = end
+        dx = x2 - x1
+        dy = y2 - y1
+
+        # Determine how steep the line is
+        is_steep = abs(dy) > abs(dx)
+
+        # Rotate line
+        if is_steep:
+            x1, y1 = y1, x1
+            x2, y2 = y2, x2
+
+        # Swap start and end points if necessary and store swap state
+        if x1 > x2:
+            x1, x2 = x2, x1
+            y1, y2 = y2, y1
+
+        # Recalculate differentials
+        dx = x2 - x1
+        dy = y2 - y1
+
+        # Calculate error
+        error = int(dx / 2.0)
+        ystep = 1 if y1 < y2 else -1
+
+        # Iterate over bounding box generating points between start and end
+        y = y1
+        for x in range(x1, x2 + 1):
+            if is_steep:
+                self.draw_dot((y, x), color)
+            else:
+                self.draw_dot((x, y), color)
+            error -= abs(dy)
+            if error < 0:
+                y += ystep
+                error += dx
+
 
     def draw_rect(self, position: Tuple[int, int], size: Tuple[int, int], color: Tuple[int, int, int], fillcolor: Tuple[int, int, int] = None):
         """

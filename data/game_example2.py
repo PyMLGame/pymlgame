@@ -11,7 +11,7 @@ class Game:
         self.screen = pymlgame.Screen('127.0.0.1', 1337, self.width, self.height)
         #self.screen = pymlgame.Screen('matelight.cbrp3.c-base.org', 1337, 40, 16)
         #self.screen = pymlgame.screen.IntroScreen('matelight.cbrp3.c-base.org', 1337, 40, 16)
-        self.clock = pymlgame.Clock(200)
+        self.clock = pymlgame.Clock(30)
         self.surface = pymlgame.Surface(self.width, self.height)
         self.a1 = (0, 0)
         self.a2 = (self.width - 1, self.height - 1)
@@ -43,9 +43,9 @@ class Game:
         self.b2 = move(self.b2)
         self.c1 = move(self.c1)
         self.c2 = move(self.c2)
-        self.surface.draw_line(self.a1, self.a2, pymlgame.CYAN)
-        self.surface.draw_line(self.b1, self.b2, pymlgame.MAGENTA)
-        self.surface.draw_line(self.c1, self.c2, pymlgame.YELLOW)
+        self.surface.draw_line(self.a1, self.a2, pymlgame.CYAN, True)
+        self.surface.draw_line(self.b1, self.b2, pymlgame.MAGENTA, True)
+        self.surface.draw_line(self.c1, self.c2, pymlgame.YELLOW, True)
 
     def render(self):
         self.screen.reset()
