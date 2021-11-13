@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -69,7 +69,7 @@ class Emu(object):
         Grab the next frame and put it on the matrix.
         """
         data, addr = self.sock.recvfrom(self.packetsize)
-        matrix = map(ord, data.strip())
+        matrix = list(map(ord, data.strip()))
         if len(matrix) == self.packetsize:
             self.matrix = matrix[:-4]
 
