@@ -32,6 +32,7 @@ __maintainer__ = 'Ricardo Band'
 __email__ = 'email@ricardo.band'
 __status__ = 'Development'
 
+import select
 import sys
 import socket
 
@@ -60,6 +61,7 @@ class Emu(object):
             self.matrix.append(0)
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.setblocking(0)
         self.sock.bind((ip, port))
         # size is width * height * 3 (rgb) + 4 (checksum)
         self.packetsize = self.width * self.height * 3 + 4
@@ -68,8 +70,13 @@ class Emu(object):
         """
         Grab the next frame and put it on the matrix.
         """
-        data, addr = self.sock.recvfrom(self.packetsize)
-        self.matrix = list(data.strip())[:self.packetsize-4]
+        select.select([], [self.sock], [])
+        try:
+            data, addr = self.sock.recvfrom(self.packetsize)
+        except socket.error:
+            pass
+        else:
+            self.matrix = list(data.strip())[:self.packetsize-4]
 
 
     def update(self):
@@ -91,6 +98,7 @@ class Emu(object):
         """
         pygame.display.update()
         pygame.display.flip()
+        self.clock.tick(60)
 
     def gameloop(self):
         """
