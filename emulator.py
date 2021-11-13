@@ -69,9 +69,8 @@ class Emu(object):
         Grab the next frame and put it on the matrix.
         """
         data, addr = self.sock.recvfrom(self.packetsize)
-        matrix = list(map(ord, data.strip()))
-        if len(matrix) == self.packetsize:
-            self.matrix = matrix[:-4]
+        self.matrix = list(data.strip())[:self.packetsize-4]
+
 
     def update(self):
         """
@@ -81,8 +80,7 @@ class Emu(object):
         for x in range(self.width):
             for y in range(self.height):
                 pixel = y * self.width * 3 + x * 3
-                #TODO: sometimes the matrix is not as big as it should
-                if pixel < pixels:
+                if pixel < pixels - 2:
                     pygame.draw.circle(self.screen,
                                        (self.matrix[pixel], self.matrix[pixel + 1], self.matrix[pixel + 2]),
                                        (x * self.dotsize + self.dotsize / 2, y * self.dotsize + self.dotsize / 2), self.dotsize / 2, 0)
